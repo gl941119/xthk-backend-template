@@ -1,0 +1,75 @@
+input[type='number'] {
+    -moz-appearance: textfield;
+}
+.my-modal {
+    .ant-tag {
+        // margin-bottom: 5px;
+    }
+    .ant-tree-title {
+        > {
+            span {
+                vertical-align: top;
+            }
+        }
+    }
+
+    .ant-form-item-children {
+        > :first-child {
+            width: 84%;
+        }
+        .counts-tips {
+            margin-left: 8px;
+            vertical-align: bottom;
+            display: inline-block;
+            margin-bottom: -5px;
+            font-size: 12px;
+        }
+    }
+    .div403 {
+        display: flex;
+        flex-direction: row;
+        //justify-content: center;
+        flex-grow: 1;
+        > div {
+            height: 220px;
+        }
+        .div-403-bg {
+            width: 220px;
+            background-size: 108px 129px;
+            background-position: center center;
+            background-repeat: no-repeat;
+        }
+        .div-403-info {
+            flex-grow: 1;
+            .d-4-inner {
+                width: 100%;
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                > div {
+                    width: 100%;
+                }
+            }
+
+            .d-4-title {
+                width: 100%;
+                font-size: 20px;
+                font-weight: bold;
+                color: rgba(67, 78, 89, 1);
+                opacity: 1;
+            }
+            .d-4-other {
+                font-size: 16px;
+                font-weight: 400;
+                line-height: 28px;
+                color: rgba(0, 0, 0, 0.45);
+                opacity: 1;
+                &.small {
+                    font-size: 12px;
+                }
+            }
+        }
+    }
+}
