@@ -9,7 +9,6 @@ import './libs/ant-design-use'
 import './mixins/global'
 import './assets/less/index.less'
 import './assets/scss/common.scss'
-import { Verify } from 'crypto'
 
 Vue.config.productionTip = false
 

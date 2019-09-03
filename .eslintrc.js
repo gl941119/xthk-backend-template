@@ -17,14 +17,19 @@ module.exports = {
         'no-multiple-empty-lines': [0, { max: 100 }],
         //关闭禁止混用tab和空格
         'no-mixed-spaces-and-tabs': [0],
-        'no-irregular-whitespace':[0],
+        'no-irregular-whitespace': [0],
         'prettier/prettier': [
-            'error',
+            'off',
             {
+                printWidth: 120,
+                tabWidth: 4,
+                useTabs: false,
                 singleQuote: true,
+                semi: false,
                 trailingComma: 'none',
                 bracketSpacing: true,
-                jsxBracketSameLine: true
+                jsxBracketSameLine: false,
+                arrowParens: 'avoid'
             }
         ]
     },

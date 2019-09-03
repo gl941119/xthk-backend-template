@@ -27,7 +27,8 @@
         "vue-quill-editor": "^3.0.6",
         "vue-router": "^3.0.3",
         "vuex": "^3.0.1",
-        "webpack-less-theme-plugin": "^2.1.0"
+        "webpack-less-theme-plugin": "^2.1.0",
+        "xthk-utils": "git+ssh://git@gitee.com:xthk_frontend/xthk-utils.git"
     },
     "devDependencies": {
         "@vue/cli-plugin-babel": "^3.9.0",
