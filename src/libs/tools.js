@@ -89,19 +89,7 @@ const getDate = (timeStamp, startType) => {
     const minutes = getHandledValue(d.getMinutes())
     const second = getHandledValue(d.getSeconds())
     let resStr = ''
-    if (startType === 'year')
-        resStr =
-            year +
-            '-' +
-            month +
-            '-' +
-            date +
-            ' ' +
-            hours +
-            ':' +
-            minutes +
-            ':' +
-            second
+    if (startType === 'year') resStr = year + '-' + month + '-' + date + ' ' + hours + ':' + minutes + ':' + second
     else resStr = month + '-' + date + ' ' + hours + ':' + minutes
     return resStr
 }
@@ -130,17 +118,13 @@ export const getRelativeTime = timeStamp => {
     // 少于等于59秒
     if (diff <= 59) resStr = diff + '秒' + dirStr
     // 多于59秒，少于等于59分钟59秒
-    else if (diff > 59 && diff <= 3599)
-        resStr = Math.floor(diff / 60) + '分钟' + dirStr
+    else if (diff > 59 && diff <= 3599) resStr = Math.floor(diff / 60) + '分钟' + dirStr
     // 多于59分钟59秒，少于等于23小时59分钟59秒
-    else if (diff > 3599 && diff <= 86399)
-        resStr = Math.floor(diff / 3600) + '小时' + dirStr
+    else if (diff > 3599 && diff <= 86399) resStr = Math.floor(diff / 3600) + '小时' + dirStr
     // 多于23小时59分钟59秒，少于等于29天59分钟59秒
-    else if (diff > 86399 && diff <= 2623859)
-        resStr = Math.floor(diff / 86400) + '天' + dirStr
+    else if (diff > 86399 && diff <= 2623859) resStr = Math.floor(diff / 86400) + '天' + dirStr
     // 多于29天59分钟59秒，少于364天23小时59分钟59秒，且传入的时间戳早于当前
-    else if (diff > 2623859 && diff <= 31567859 && IS_EARLY)
-        resStr = getDate(timeStamp)
+    else if (diff > 2623859 && diff <= 31567859 && IS_EARLY) resStr = getDate(timeStamp)
     else resStr = getDate(timeStamp, 'year')
     return resStr
 }
@@ -220,6 +204,5 @@ export const objEqual = (obj1, obj2) => {
     const keysArr2 = Object.keys(obj2)
     if (keysArr1.length !== keysArr2.length) return false
     else if (keysArr1.length === 0 && keysArr2.length === 0) return true
-    /* eslint-disable-next-line */ else
-        return !keysArr1.some(key => obj1[key] != obj2[key])
+    /* eslint-disable-next-line */ else return !keysArr1.some(key => obj1[key] != obj2[key])
 }

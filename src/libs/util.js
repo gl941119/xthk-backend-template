@@ -1,3 +1,10 @@
+import Vue from 'vue'
+import config from '@/config'
+import Store from '@/store'
+import router from '@/router'
+
+import { sendMessage } from 'xthk-utils/system-communication'
+
 /**
  * @param {String} url
  * @description 从URL中解析参数
@@ -59,10 +66,7 @@ export const scrollTop = (el, from = 0, to, duration = 500, endCallback) => {
  */
 export const isDomainAddress = () => {
     let hostname = window.location.hostname
-    return (
-        !/^\d{1,3}\.\d{1,3}.\d{1,3}.\d{1,3}$/.test(hostname) &&
-        hostname.toLowerCase() !== 'localhost'
-    )
+    return !/^\d{1,3}\.\d{1,3}.\d{1,3}.\d{1,3}$/.test(hostname) && hostname.toLowerCase() !== 'localhost'
 }
 /**
  * @description 获得当前主域名
@@ -199,4 +203,14 @@ export const throttle = (fn, delay = 180) => {
             }
         }
     }
+}
+
+/**重登录 */
+export const relogin = function(cb) {
+    sendMessage.logout(() => {
+        // Store.dispatch('logout')
+        // router.replace({ name: 'login' })
+        Vue.prototype.$message.error('请重新登录')
+    })
+    //logOutTimer = null
 }

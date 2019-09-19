@@ -1,8 +1,8 @@
 import axios from 'axios'
 import store from '@/store'
 import config from '@/config'
-import router from '@/router'
-import Vue from 'vue'
+import { relogin } from '@/libs/util'
+
 let logOutTimer = null
 /* 解析配置中默认参数 */
 const DEFAULT = {
@@ -14,7 +14,12 @@ const DEFAULT = {
 /**
  * @class API请求封装
  * */
-export default new (class Fetch {
+class Fetch {
+    /**构造 */
+    constructor(options = {}) {
+        this._def = Object.assign({}, DEFAULT, options)
+    }
+
     /**
      * @description get请求封装
      * */
@@ -42,7 +47,15 @@ export default new (class Fetch {
      * @param {object} options 请求额外参数
      * */
     _fetch(options) {
-        const opt = Object.assign({}, DEFAULT, options.options)
+        const opt = Object.assign({}, this._def, options.options)
+        const headers = {
+            Authorization: store.getters.getToken || ''
+        }
+
+        opt.name && (headers['APP-NAME'] = opt.name)
+        opt.version && (headers['APP-VERSION'] = opt.version)
+        opt.device && (headers['APP-DEVICE'] = opt.device)
+
         /* 创建axios实例 */
         const instance = axios.create({
             /* 默认请求根目录 */
@@ -50,12 +63,7 @@ export default new (class Fetch {
             /* 请求超时时间 */
             timeout: opt.timeout,
             /* 设置header */
-            headers: {
-                Authorization: store.getters.getToken || '',
-                'APP-NAME': opt.name,
-                'APP-VERSION': opt.version,
-                'APP-DEVICE': opt.device
-            }
+            headers
         })
 
         /* 请求拦截 */
@@ -80,7 +88,8 @@ export default new (class Fetch {
                         // store.dispatch('logout')
                         // router.replace({ name: 'login' })
                         logOutTimer = null
-                        Vue.prototype.$message.error('请重新登录')
+                        relogin()
+                        //Vue.prototype.$message.error('请重新登录')
                     }, 150)
 
                     return new Promise(() => {})
@@ -93,11 +102,15 @@ export default new (class Fetch {
             if (error && error.response) {
                 return Promise.reject(error.response.data)
             } else {
-                return Promise.reject({ message: '服务器未知异常' })
+                return Promise.reject({ message: '网络异常，请稍后再试' })
             }
         }
         // 添加响应拦截器
         instance.interceptors.response.use(responseSuccess, responseFail)
         return instance(options)
     }
-})()
+}
+
+export default new Fetch()
+
+export { Fetch as FetchClass }
