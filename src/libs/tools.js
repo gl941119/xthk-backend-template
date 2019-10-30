@@ -206,3 +206,5 @@ export const objEqual = (obj1, obj2) => {
     else if (keysArr1.length === 0 && keysArr2.length === 0) return true
     /* eslint-disable-next-line */ else return !keysArr1.some(key => obj1[key] != obj2[key])
 }
+
+
