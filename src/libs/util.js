@@ -208,8 +208,8 @@ export const throttle = (fn, delay = 180) => {
 /**重登录 */
 export const relogin = function(cb) {
     sendMessage.logout(() => {
-        // Store.dispatch('logout')
-        // router.replace({ name: 'login' })
+        Store.dispatch('logout')
+        router.replace({ name: 'login' })
         Vue.prototype.$message.error('请重新登录')
     })
     //logOutTimer = null
