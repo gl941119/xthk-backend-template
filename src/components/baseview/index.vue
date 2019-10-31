@@ -1,64 +1,60 @@
 <template>
     <layout>
-        <div slot="extra">
+        <div slot='extra'>
             <a-input-search
-                :placeholder="searchPlaceholder"
-                @search="handleSearch"
+                ref='aInputSearch'
+                :placeholder='searchPlaceholder'
+                @search='handleSearch'
+                :defaultValue='searchInputDefaultValue'
+                style='width:240px'
             ></a-input-search>
         </div>
-        <div class="base-view">
+        <div class='base-view' :class='baseViewClass'>
             <a-form>
-                <slot name="query"></slot>
-                <a-row :gutter="32" type="flex">
-                    <a-col :span="2" v-if="showAddButton">
-                        <a-button
-                            type="primary"
-                            @click="handleAdd"
-                            :loading="addButtonLoading"
-                        >
-                            <a-icon
-                                :type="addButtonIconType"
-                                v-if="showAddButtonIcon"
-                            />
+                <slot name='query'></slot>
+                <a-row :gutter='32' type='flex'>
+                    <a-col :span='2' v-if='showAddButton'>
+                        <a-button type='primary' @click='handleAdd' :loading='addButtonLoading'>
+                            <a-icon :type='addButtonIconType' v-if='showAddButtonIcon' />
                             <span>{{ addButtonText }}</span>
                         </a-button>
                     </a-col>
-                    <a-col :span="22">
-                        <slot name="extra-button"></slot>
+                    <a-col :span='22'>
+                        <slot name='extra-button'></slot>
                     </a-col>
                 </a-row>
             </a-form>
             <info-list
-                :columns="columns"
-                :source="dataSource"
-                :pagination="pagination"
-                :rowKey="rowKey"
-                :loading="infoListloading"
-                :onSorter="onSorter"
-                :onPageChange="onPageChange"
-                v-if="showInfoList"
+                :columns='columns'
+                :source='dataSource'
+                :pagination='pagination'
+                :rowKey='rowKey'
+                :loading='infoListloading'
+                :onSorter='onSorter'
+                :onPageChange='onPageChange'
+                v-if='showInfoList'
             ></info-list>
         </div>
         <a-modal
-            class="my-modal"
-            :visible="showModal"
-            @cancel="handlerModalCancel"
-            :afterClose="handlerModalClose"
-            @ok="handlerModalOk"
-            :maskClosable="false"
-            :destroyOnClose="true"
-            :confirmLoading="confirmLoading"
-            :width="modalWidth"
+            class='my-modal'
+            :visible='showModal'
+            @cancel='handlerModalCancel'
+            :afterClose='handlerModalClose'
+            @ok='handlerModalOk'
+            :maskClosable='false'
+            :destroyOnClose='true'
+            :confirmLoading='confirmLoading'
+            :width='modalWidth'
+            :footer='modalFooter'
         >
-            <template slot="title">
+            <template slot='title'>
                 <span>{{ modalTitle }}</span>
                 <span
-                    style="margin-left:1em;font-size:12px;color:gray"
-                    v-if="showModalSecondTitle"
-                    >基础信息</span
-                >
+                    style='margin-left:1em;font-size:12px;color:gray'
+                    v-if='showModalSecondTitle'
+                >基础信息</span>
             </template>
-            <slot name="modal"></slot>
+            <slot name='modal'></slot>
         </a-modal>
         <slot></slot>
     </layout>
@@ -131,6 +127,11 @@ export default {
             type: String,
             default: '请输入查询内容'
         },
+        /**查询输入框默认值 */
+        searchInputDefaultValue: {
+            type: String,
+            default: ''
+        },
         /**查询文本框搜索事件 */
         handleSearch: handle,
         /** 添加按钮事件*/
@@ -185,6 +186,11 @@ export default {
             type: [Number, String],
             default: 520
         },
+        /**模式窗口底部内容 */
+        modalFooter: {
+            type: [String, Object, undefined],
+            default: undefined
+        },
         /** 翻页回调方法 */
         onPageChange: handle,
         /**排序回调方法 */
@@ -200,7 +206,10 @@ export default {
             this.modalVisible = c
         }
     },
-    created() {},
+    created() {
+        // this.$refs.aInputSearch.value = this.searchInputDefaultValue
+    },
+    mounted() {},
     methods: {
         test() {}
     }

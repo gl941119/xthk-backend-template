@@ -2,8 +2,10 @@ import Vue from 'vue'
 import config from '@/config'
 import Store from '@/store'
 import router from '@/router'
-
+import { forEach, hasOneOf, objEqual } from '@/libs/tools'
 import { sendMessage } from 'xthk-utils/system-communication'
+
+const { title } = config
 
 /**
  * @param {String} url
@@ -19,15 +21,21 @@ export const getParams = url => {
     return paramObj
 }
 
-/**9
- * 回到元素顶部
- * @param {HtmlDomObject} el -页面元素
- * @param {Number} from - 起始位置
- * @param {Number} to - 结束位置
- * @param {Number} duration - 延时时长
- * @param {Function} endCallback - 结束回调方法
+/**
+ * @description 根据name/params/query判断两个路由对象是否相等
+ * @param {*} route1 路由对象
+ * @param {*} route2 路由对象
  */
-export const scrollTop = (el, from = 0, to, duration = 500, endCallback) => {
+export const routeEqual = (route1, route2) => {
+    const params1 = route1.params || {}
+    const params2 = route2.params || {}
+    const query1 = route1.query || {}
+    const query2 = route2.query || {}
+    return route1.name === route2.name && objEqual(params1, params2) && objEqual(query1, query2)
+}
+
+// scrollTop animation
+export const scrollTop = (el, from = 0, to = 0, duration = 500, endCallback = null) => {
     if (!window.requestAnimationFrame) {
         window.requestAnimationFrame =
             window.webkitRequestAnimationFrame ||
@@ -68,6 +76,7 @@ export const isDomainAddress = () => {
     let hostname = window.location.hostname
     return !/^\d{1,3}\.\d{1,3}.\d{1,3}.\d{1,3}$/.test(hostname) && hostname.toLowerCase() !== 'localhost'
 }
+
 /**
  * @description 获得当前主域名
  */
@@ -110,6 +119,14 @@ export const receviceMessage = (fn, key) => {
         window.addEventListener('message', fn, false)
         catchMessateFunction.set(k, fn)
     }
+}
+
+/**
+ * @description form表单，单行标签与输入框的占位
+ */
+export const formItemLayout = {
+    labelCol: { span: 5 },
+    wrapperCol: { span: 19 }
 }
 
 /**
@@ -178,7 +195,6 @@ export const debounce = (fn, delay = 180) => {
  */
 export const throttle = (fn, delay = 180) => {
     let timer = null,
-        remaining = 0,
         previous = new Date()
 
     return function() {
@@ -206,7 +222,7 @@ export const throttle = (fn, delay = 180) => {
 }
 
 /**重登录 */
-export const relogin = function(cb) {
+export const relogin = function() {
     sendMessage.logout(() => {
         Store.dispatch('logout')
         router.replace({ name: 'login' })

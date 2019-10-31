@@ -1,25 +1,12 @@
 <template>
-    <a-breadcrumb
-        :routes="breadcrumb"
-        class="breadcrumb"
-    >
-        <template
-            slot="itemRender"
-            slot-scope="{ route, params, routes }"
-        >
-            <span v-if="routes.indexOf(route) === routes.length - 1">
-                {{
+    <a-breadcrumb class='breadcrumb' :routes='breadcrumb'>
+        <template slot='itemRender' slot-scope='{ route, params, routes }'>
+            <span v-if='routes.indexOf(route)===0 ||  routes.indexOf(route) === routes.length - 1'>{{
                 route.breadcrumbName
-                }}
-            </span>
-            <router-link
-                :to="{ name: route.name }"
-                v-else
-            >
-                {{
+            }}</span>
+            <router-link v-else :to='{ name: route.name }' >{{
                 route.breadcrumbName
-                }}
-            </router-link>
+            }}</router-link>
         </template>
     </a-breadcrumb>
 </template>
@@ -32,12 +19,9 @@ export default {
     },
     computed: {
         breadcrumb() {
-            //生成面包宵数据。根据实际情况和重写
-            let info = this.$route.matched.filter(
-                ({ path, redirect: { name } = { name: '' } }) => {
-                    return path && !name
-                }
-            )
+            let info = this.$route.matched.filter(({ path, redirect: { name } = { name: '' } }, index) => {
+                return index === 1 || (path && !name)
+            })
             let temp = []
             info.forEach((n, i) => {
                 if (n.meta && n.meta.preRoute) {
@@ -46,14 +30,12 @@ export default {
                 temp.push({ ...n })
             })
 
-            info = temp.map(
-                ({ name, meta: { title: breadcrumbName } = { title: '' } }) => {
-                    return {
-                        breadcrumbName,
-                        name
-                    }
+            info = temp.map(({ name, meta: { title: breadcrumbName } = { title: '' } }) => {
+                return {
+                    breadcrumbName,
+                    name
                 }
-            )
+            })
             return info
         }
     },

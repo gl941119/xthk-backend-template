@@ -98,8 +98,6 @@ export default {
                 window.location.replace(decodeURIComponent(this.$route.query.redirect))
             } else {
                 this.$router.replace({ name: 'home' })
-                this.$store.commit('system/setSystem')
-                this.$store.commit('system/setUrl')
             }
         },
         /** 用户登录 */

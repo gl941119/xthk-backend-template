@@ -4,6 +4,29 @@ import { relogin } from '@/libs/util'
 
 Vue.use(Router)
 
+/**
+ * 路由对象
+ * route对应的基本结构为:
+ * {
+ *    path: '',
+      name: '',
+      redirect: '',
+      meta: { 
+          title: '',
+          icon:'',//图标名称
+          showMenu:true, //是否显示菜单
+          preRoute:{ //上级路由信息
+            name:"",
+            meta:{
+                title:""
+            }
+          }
+      },
+      children: [],
+      component:            
+ * }
+ * 
+ */
 const router = new Router({
     routes: [
         {
