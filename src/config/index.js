@@ -28,6 +28,10 @@ export default {
      */
     extraUrl: process.env.VUE_APP_EXTRA_URL,
     /**
+     * 后台管理系统路径(特殊用)，未设置时默认返回api请求的其础的路径
+     */
+    backendUrl: process.env.VUE_APP_BACKEND_URL || process.env.VUE_APP_BASE_URL,
+    /**
      * @description api请求超时时间
      * */
     timeout: 30000,
