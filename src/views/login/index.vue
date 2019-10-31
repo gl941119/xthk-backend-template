@@ -74,7 +74,7 @@ import { login, getLoginCode, getCheckQrStatus } from '_axios/user'
 export default {
     data() {
         return {
-            islogin: true
+            islogin: false
         }
     },
     beforeCreate() {
