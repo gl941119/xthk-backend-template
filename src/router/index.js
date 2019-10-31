@@ -1,7 +1,8 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import { relogin } from '@/libs/util'
-
+import NProgress from 'nprogress'
+import 'nprogress/nprogress.css' //这个样式必须引入
 Vue.use(Router)
 
 /**
@@ -61,6 +62,7 @@ const validateMenuPermission = function(menus) {
 
 //路由守卫钩子，可根据项目需要进行拦截处理
 router.beforeEach((to, from, next) => {
+    NProgress.start()
     let token = Store.getters.getToken
     let name = to.name
     if (token) {
@@ -80,6 +82,10 @@ router.beforeEach((to, from, next) => {
         }
     }
     next()
+})
+
+router.afterEach((to, from) => {
+    NProgress.done()
 })
 
 export default router
