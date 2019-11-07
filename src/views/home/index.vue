@@ -1,10 +1,16 @@
 <template>
-    <div>
-        <h3>这只是一个首页</h3>
-    </div>
+  <base-layout></base-layout>
 </template>
 <script>
-export default {}
+import { BaseLayout } from '@/layouts'
+export default {
+  components: {
+    BaseLayout
+  },
+  data() {
+    return {}
+  }
+}
 </script>
 
 <style lang="scss"></style>

@@ -1,54 +1,102 @@
 // @import 'var';
 /* 有效区域宽度 */
 body {
-    min-width: 1280px;
-    background-color: rgb(240, 242, 245);
+  min-width: 1280px;
+  background-color: rgb(240, 242, 245);
 }
 /* 滚动条美化 */
 ::-webkit-scrollbar {
-    width: 8px;
-	height: 8px;
-	border: none !important 
+  width: 8px;
+  height: 8px;
+  border: none !important;
 }
 
 ::-webkit-scrollbar-thumb {
-    background-color: rgba	(0,0,0,0.2);
-    opacity: 0.6;
-    outline: 0 none;
-    border-radius: 2px;
-    border: 0 none;
-    transition: opacity 0.2s linear;
+  background-color: rgba(0, 0, 0, 0.2);
+  opacity: 0.6;
+  outline: 0 none;
+  border-radius: 4px;
+  border: 0 none;
+  transition: opacity 0.2s linear;
 }
 
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
-    -webkit-appearance: none !important;
+  -webkit-appearance: none !important;
 }
 
 /* 颜色类名 */
 .primary {
-    color: $primary-color;
+  color: $primary-color;
 }
 .success {
-    color: $success-color;
+  color: $success-color;
 }
 .warning {
-    color: $warning-color;
+  color: $warning-color;
 }
 .error {
-    color: $error-color;
+  color: $error-color;
 }
 .disabled {
-    color: $disabled-color;
+  color: $disabled-color;
 }
 
 /* 文字按钮 */
 a.error {
-    color: rgba($error-color, 0.9);
-    &:hover {
-        color: rgba($error-color, 0.7);
-    }
-    &:active {
-        color: $error-color;
-    }
+  color: rgba($error-color, 0.9);
+  &:hover {
+    color: rgba($error-color, 0.7);
+  }
+  &:active {
+    color: $error-color;
+  }
+}
+
+button.success {
+  background-color: $success-color;
+  border-color: $success-color;
+  color: #ffffff;
+}
+button.success:hover,
+button.success:focus {
+  background-color: $success-color;
+  border-color: $success-color;
+  color: #ffffff;
+}
+
+button.error {
+  background-color: $error-color;
+  border-color: $error-color;
+  color: #ffffff;
+}
+button.error:hover,
+button.error:focus {
+  background-color: $error-color;
+  border-color: $error-color;
+  color: #ffffff;
+}
+
+button.disabled {
+  background-color: $disabled-color;
+  border-color: $disabled-color;
+  color: #ffffff;
+}
+button.disabled:hover,
+button.disabled:focus {
+  background-color: $disabled-color;
+  border-color: $disabled-color;
+  color: #ffffff;
+}
+
+button.warning {
+  background-color: $warning-color;
+  border-color: $warning-color;
+  color: #ffffff;
+}
+button.warning:hover,
+button.warning:focus {
+  background-color: $warning-color;
+  border-color: $warning-color;
+  color: #ffffff;
 }

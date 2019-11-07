@@ -11,6 +11,7 @@ const DEFAULT = {
     name: config.name,
     version: config.version
 }
+
 /**
  * @class API请求封装
  * */
@@ -53,7 +54,7 @@ class Fetch {
         }
 
         opt.name && (headers['APP-NAME'] = opt.name)
-        opt.version && (headers['APP-VERSION'] = opt.version)
+        opt.version && (headers['XTHK-ONLINE-VERSION'] = headers['APP-VERSION'] = opt.version)
         opt.device && (headers['APP-DEVICE'] = opt.device)
 
         /* 创建axios实例 */

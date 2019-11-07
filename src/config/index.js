@@ -2,15 +2,15 @@ export default {
     /**
      * @description 配置显示在浏览器标签的title
      */
-    title: '后端管理系统基本框架',
+    title: '在线运营服务管理中心',
     /**
      * @description 配置API接口中识别的项目类型
      */
-    name: 'base-back-end',
+    name: 'service_management_center',
     /**
      * @description 版本号
      * */
-    version: '0.1.0',
+    version: '1.0.0',
     /**
      * @description 设备名称
      * */
