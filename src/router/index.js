@@ -9,7 +9,6 @@ import generate from './generate-router'
 import { getOwnInfo } from '_axios/user'
 import { getAuthUserMenusList } from '_axios/permission'
 
-debugger
 Vue.use(Router)
 
 /**路由白名单 */
@@ -129,7 +128,7 @@ router.beforeEach(async (to, from, next) => {
   let token = Store.getters.getToken
   let ownAuth = Store.getters.getOwnAuth
   let name = to.name
-  debugger
+
   //在白名单中的路由名称，直接进入页面
   if (whiteList.includes(name)) {
     next()
