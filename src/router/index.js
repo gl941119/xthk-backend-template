@@ -7,8 +7,13 @@ import NProgress from 'nprogress'
 import 'nprogress/nprogress.css' //这个样式必须引入
 import generate from './generate-router'
 import { getOwnInfo } from '_axios/user'
+import { getAuthUserMenusList } from '_axios/permission'
 
+debugger
 Vue.use(Router)
+
+/**路由白名单 */
+const whiteList = ['noapp', 'login']
 
 /**
  * 路由对象
@@ -50,6 +55,12 @@ export const routes = [
     meta: { title: '首页' },
     children: [],
     component: () => import(/* webpackChunkName: "home" */ '../views/login') //加载方式为按需加载
+  },
+  {
+    path: '/noapp',
+    name: 'noapp',
+    meta: { title: '心田花园--无可用应用' },
+    component: () => import(/* webpackChunkName: "login" */ '../views/error/noapp')
   }
 ]
 
@@ -70,52 +81,78 @@ const validateMenuPermission = function(menus) {
 
 /**获得用户相关的菜单或权限信息 */
 const getUserPermissions = function() {
-  let arr = []
-  routes
-    .find(m => m.path === '/')
-    .children.forEach(m => {
-      arr.push(m.name)
-      if (m.children) {
-        Array.prototype.push.apply(arr, m.children.map(n => n.name))
-      }
+  // let arr = []
+  // routes
+  //   .find(m => m.path === '/')
+  //   .children.forEach(m => {
+  //     arr.push(m.name)
+  //     if (m.children) {
+  //       Array.prototype.push.apply(
+  //         arr,
+  //         m.children.map(n => n.name)
+  //       )
+  //     }
+  //   })
+  // console.log('getUserPermissions')
+  return getAuthUserMenusList()
+    .then(({ status_code, message, data: { menus, permissions } = { menus: [], permissions: [] } }) => {
+      Store.commit('setOwnAuth', { menus, permissions })
+      return { menus, permissions }
     })
-
-  Store.commit('setOwnAuth', { menus: arr })
+    .catch(({ message }) => {
+      Vue.prototype.$message.error(message)
+      router.replace({ name: 'noapp' })
+    })
 }
 
 let isLoadUserInfo = false
 /**获得用户信息 */
 const getUserInfo = function() {
-  if (isLoadUserInfo) return
   const user = Store.getters.getUser
-  console.log('user', user)
   if (!user) {
-    isLoadUserInfo = true
     console.count('获得用户信息')
-    getOwnInfo()
+    return getOwnInfo()
       .then(({ data }) => {
         Store.commit('setUser', data)
+        return data
       })
-      .finally(d => {
-        isLoadUserInfo = false
-      })
+      .catch(() => {})
   }
+  return new Promise(resolve => {
+    resolve(user)
+  })
 }
 
 //路由守卫钩子，可根据项目需要进行拦截处理
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   NProgress.start()
   let token = Store.getters.getToken
+  let ownAuth = Store.getters.getOwnAuth
   let name = to.name
+  debugger
+  //在白名单中的路由名称，直接进入页面
+  if (whiteList.includes(name)) {
+    next()
+    return
+  }
   if (token) {
-    getUserPermissions()
     getUserInfo()
+    if (!ownAuth) {
+      ownAuth = await getUserPermissions()
+    }
+    console.log('ownAuth', ownAuth)
+
+    if (!ownAuth) {
+      next(false)
+      router.replace({ name: 'noapp' })
+      return
+    }
     //已登录，并存在token
     if (name === 'login') {
       //进入login页，重定向到home页
       next(false)
       router.replace({ name: 'home' })
-      return true
+      return
     }
   } else {
     if (name !== 'login') {

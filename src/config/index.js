@@ -2,11 +2,11 @@ export default {
     /**
      * @description 配置显示在浏览器标签的title
      */
-    title: '在线运营服务管理中心',
+    title: '管理系统基本框架',
     /**
      * @description 配置API接口中识别的项目类型
      */
-    name: 'service_management_center',
+    name: 'base-back-end',
     /**
      * @description 版本号
      * */

@@ -1,8 +1,23 @@
 <template>
   <div class='timeRanger-wrap'>
-    <a-time-picker :disabled='disabled' :value='timeValue' @change='change' :getPopupContainer='getPopupContainer' />
+    <a-time-picker
+      :allowClear='false'
+      inputReadOnly
+      :format='format'
+      :disabled='disabled'
+      :value='timeValue'
+      @change='change'
+      :getPopupContainer='getPopupContainer'
+    />
     <span style='padding:0 8px;'>至</span>
-    <a-time-picker :disabled='disabled' :value='timeValue1' @change='change1' />
+    <a-time-picker
+      inputReadOnly
+      :allowClear='false'
+      :format='format'
+      :disabled='disabled'
+      :value='timeValue1'
+      @change='change1'
+    />
   </div>
 </template>
 
@@ -29,6 +44,10 @@ export default {
     getPopupContainer: {
       type: Function,
       default: () => document.body
+    },
+    format: {
+      type: String,
+      default: timeFormat
     }
   },
   data() {
@@ -39,21 +58,25 @@ export default {
     }
   },
   watch: {
-    timeValue(c, o) {
+    value(c, o) {
       if (c) {
-        console.log(c)
+        this.timeValue = c[0] ? moment(c[0], this.format) : null
+        this.timeValue1 = c[1] ? moment(c[1], this.format) : null
+      } else {
+        this.timeValue = null
+        this.timeValue1 = null
       }
     }
   },
   created() {
-    this.timeValue = this.value[0] ? moment(this.value[0], timeFormat) : null
-    this.timeValue1 = this.value[1] ? moment(this.value[1], timeFormat) : null
+    this.timeValue = this.value[0] ? moment(this.value[0], this.format) : null
+    this.timeValue1 = this.value[1] ? moment(this.value[1], this.format) : null
   },
   methods: {
     getValue() {
       return [
-        this.timeValue ? this.timeValue.format(timeFormat) : '',
-        this.timeValue1 ? this.timeValue1.format(timeFormat) : ''
+        this.timeValue ? this.timeValue.format(this.format) : '',
+        this.timeValue1 ? this.timeValue1.format(this.format) : ''
       ]
     },
     /*起始时间的变化 */

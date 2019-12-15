@@ -128,3 +128,10 @@ export const rbacGroupUpdatePermissions = param => fetch.post('/api/rbac/group/u
  * id	integer	权限组id
  */
 export const getRbacGroupMenuPermissions = param => fetch.get('/api/rbac/group/menu/permissions', param)
+
+///api/auth/user/menus/list
+/**
+ * 登录用户权限
+ * @param {Object} param
+ */
+export const getAuthUserMenusList = param => fetch.get('/api/auth/user/menus/list', param)

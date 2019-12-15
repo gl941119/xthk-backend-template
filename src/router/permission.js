@@ -33,7 +33,7 @@ const permission = [
         meta: {
           title: '权限组设置',
           icon: 'project',
-          showMenu: false,
+          showMenu: true,
           preRoute: undefined
         },
         component: () => import(/* webpackChunkName: "permission" */ '../views/permission/group')

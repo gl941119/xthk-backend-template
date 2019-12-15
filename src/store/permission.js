@@ -4,6 +4,7 @@ import { routes } from '@/router'
 const filterNotShowMenu = function(infos, myMenus) {
   if (!infos) return null
   //let { menus: currentMenus = [] } = this.ownAuth || { menus: [] }
+
   let currentMenus = myMenus
   infos.forEach(n => {
     n.meta && n.meta.preRoute === null && (n.meta.preRoute = undefined)

@@ -167,7 +167,7 @@ class Storage {
         //options为整型，且大于0时指定过期时间
         if (Number.isInteger(options)) {
             opt.expires = options > 0 ? options * sixty * oneSecond : -1
-        } else if (Object.isObject(options)) {
+        } else if (  Object.prototype.toString.call(options) === '[object Object]') {
             opt = {
                 ...opt,
                 ...options

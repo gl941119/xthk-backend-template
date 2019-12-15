@@ -34,7 +34,7 @@ export default {
   data() {
     return {
       columns: [
-        { title: '序号', dataIndex: 'num' },
+        { title: '序号', dataIndex: 'num', width: 160 },
         { title: '接口名称', dataIndex: 'name' },
         { title: '接口地址', dataIndex: 'permission' },
         {

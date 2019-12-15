@@ -1,16 +1,15 @@
 <template>
-  <div class='editor'>
+  <div class="editor">
     <!-- 图片上传组件辅助-->
-    <upload-oss :afterUpload='afterUpload'></upload-oss>
+    <upload-oss :afterUpload="afterUpload" :getStsToken="getStsToken"></upload-oss>
     <quill-editor
-      class='editor'
-      v-model='content'
-      ref='myQuillEditor'
-      :options='editorOption'
-      @blur='onEditorBlur($event)'
-      @focus='onEditorFocus($event)'
-      @change='onEditorChange($event)'
-      :style='editorHeight'
+      class="editor"
+      v-model="content"
+      ref="myQuillEditor"
+      :options="editorOption"
+      @blur="onEditorBlur($event)"
+      @focus="onEditorFocus($event)"
+      @change="onEditorChange($event)"
     ></quill-editor>
     <!-- <div>{{limitText}}/{{pureText.length}}</div> -->
   </div>
@@ -61,6 +60,18 @@ export default {
     maxLength: {
       type: Number,
       default: 0
+    },
+    getStsToken: {
+      type: [Function, null],
+      default: null
+    },
+    placeholder: {
+      type: [String, null],
+      default: '请输入内容'
+    },
+    isUploadPic: {
+      type: [Boolean],
+      default: true
     }
   },
   components: {
@@ -72,7 +83,14 @@ export default {
       this.content = val || ''
     }
   },
-  mounted() {},
+  created() {
+    this.editorOption.placeholder = this.placeholder
+  },
+  mounted() {
+    this.content = this.value
+    console.log('myQuillEditor', this.$refs.myQuillEditor)
+    this.$refs.myQuillEditor.quill.container.style.height = this.editorHeight.height
+  },
   computed: {
     editorHeight() {
       return {
@@ -84,16 +102,19 @@ export default {
     }
   },
   data() {
+    const opts = [...toolbarOptions]
+    if (!this.isUploadPic) {
+      opts[opts.length - 1] = ['link']
+    }
     return {
       content: '',
       quillUpdateImg: false, // 根据图片上传状态来确定是否显示loading动画，刚开始是false,不显示
       editorOption: {
-        placeholder: '',
         theme: 'snow', // or 'bubble'
         placeholder: '请输入内容',
         modules: {
           toolbar: {
-            container: toolbarOptions,
+            container: opts,
             handlers: {
               image: function(value) {
                 if (value) {
@@ -140,7 +161,10 @@ export default {
     },
     onEditorChange(val) {
       let ml = Math.abs(this.maxLength)
-      if (ml && val.text.length > ml) {
+
+      let txt = val.text.replace(/[\r\n]/, '')
+
+      if (ml && txt.length > ml) {
         val.quill.deleteText(ml, 5)
 
         if (this.onEditorChange.timer) {
@@ -149,7 +173,7 @@ export default {
           this.onEditorChange.timer = null
         }
         this.onEditorChange.timer = setTimeout(() => {
-          this.$message.error(`最多只能输入${ml}字符`)
+          this.$message.warning(`最多只能输入${ml}字符`)
         }, 200)
       }
 
@@ -162,11 +186,12 @@ export default {
     }
   }
 }
-</script> 
+</script>
 
 <style lang="scss">
 .editor {
   line-height: normal !important;
+  width: 100%;
 }
 .ql-snow .ql-tooltip[data-mode='link']::before {
   content: '请输入链接地址:';

@@ -14,13 +14,13 @@
       <a-form>
         <slot name='query'></slot>
         <a-row :gutter='32' type='flex'>
-          <a-col :span='2' v-if='showAddButton'>
+          <a-col :span='2' v-if='showAddButton' style='width:auto;'>
             <a-button type='primary' @click='handleAdd' :loading='addButtonLoading'>
               <a-icon :type='addButtonIconType' v-if='showAddButtonIcon' />
               <span>{{ addButtonText }}</span>
             </a-button>
           </a-col>
-          <a-col :span='22'>
+          <a-col :span='22' style='flex:1 !important'>
             <slot name='extra-button'></slot>
           </a-col>
         </a-row>
@@ -33,11 +33,13 @@
         :loading='infoListloading'
         :onSorter='onSorter'
         :onPageChange='onPageChange'
+        :rowSelection='rowSelection'
         v-if='showInfoList'
       ></info-list>
     </div>
     <a-modal
       class='my-modal'
+      :class='modalClass'
       :visible='showModal'
       @cancel='handlerModalCancel'
       :afterClose='handlerModalClose'
@@ -196,7 +198,17 @@ export default {
     /** 翻页回调方法 */
     onPageChange: handle,
     /**排序回调方法 */
-    onSorter: handle
+    onSorter: handle,
+    /**表格行操作对象 */
+    rowSelection: {
+      type: [Object, null],
+      default: null
+    },
+    /**模式窗口扩展样式 */
+    modalClass: {
+      type: [String],
+      default: ''
+    }
   },
   data() {
     return {

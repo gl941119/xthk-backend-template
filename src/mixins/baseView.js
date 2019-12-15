@@ -82,7 +82,6 @@ export const baseViewMixin = {
       console.log('onPageChange', current, pageSize)
       this.query.page = current
       this.query.per_page = pageSize
-      this.loading = true
       this.getInfoList && (await this.getInfoList())
       this.loading = false
     },
