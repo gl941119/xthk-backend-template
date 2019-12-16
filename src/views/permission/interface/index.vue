@@ -73,7 +73,7 @@ export default {
   },
   created() {
     Object.assign(this.query, { keyword: '' })
-    this.getInfoList()
+    //this.getInfoList()
   },
   methods: {
     /**获得列表信息.*/

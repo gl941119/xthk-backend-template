@@ -36,11 +36,18 @@ export const baseViewMixin = {
   data() {
     return {
       debounce,
+      /**允许创建组件加载列表数据 */
+      enableCreateLoadInfo: true,
+      /**表单项基本样式 */
       formItemLayout,
       ...baseData(), //继承自BaseView组件的Props属性字段（除类型为function）
+      /** 名称字段统计*/
       nameCount: 0, //名称字段统计
+      /**是否正在存储数据中 */
       isInStore: false, //是否存储数据中+
+      /**数据加载状态 */
       loading: false, //加载动画
+      /**当前选中业务信息 */
       currentInfo: {}, //当前选中业务信息
       /**查条基本条件 */
       query: {
@@ -56,9 +63,11 @@ export const baseViewMixin = {
         onFieldsChange: this.onFieldsChange
       })
     }
-    delay(() => {
-      this.getInfoList && this.getInfoList()
-    })
+    if (this.enableCreateLoadInfo) {
+      delay(() => {
+        this.getInfoList && this.getInfoList()
+      })
+    }
   },
   methods: {
     /**获得列表信息.需要override */

@@ -109,7 +109,7 @@ export default {
   },
   created() {
     Object.assign(this.query, { meta_title: '' })
-    this.getInfoList()
+    //this.getInfoList()
   },
   methods: {
     /**获得列表信息.*/

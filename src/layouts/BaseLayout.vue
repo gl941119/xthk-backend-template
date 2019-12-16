@@ -9,9 +9,9 @@
     ></sider-menu>
     <a-layout-content :class='baseContentClass'>
       <head-tabs
+        v-if='allowShowGlobalHeadTabs'
         :items.sync='tabs'
         :defaultKey='defaultTabKey'
-        v-if='allowShowGlobalHeadTabs'
         @tabSelect='handleTabSelect'
         @tabRemove='handleTabRemove'
       ></head-tabs>
@@ -59,7 +59,7 @@ export default {
     //成生菜单数据
     const data = await this.generateMenus()
     this.menus = data
-    console.log('BaseLayout-menus', this.menus)
+
     this._initInfo()
   },
   mounted() {},
@@ -107,7 +107,9 @@ export default {
     /**tab项被选中 */
     handleTabSelect(item) {
       this.selectedMenuKeys = [item.name]
+      this.defaultTabKey = item.name
       this.$router.push({ name: item.name })
+      console.log('handleTabSelect', 'router')
     },
     /**tab项被移出 */
     handleTabRemove(item) {
@@ -126,6 +128,7 @@ export default {
         this.defaultTabKey = name
       }
       this.$router.push({ name })
+      console.log('handleMenuSelect', 'router')
     }
   }
 }

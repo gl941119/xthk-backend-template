@@ -9,9 +9,6 @@
           <a-form :form='form'>
             <a-form-item>
               <a-input
-                maxlength='11'
-                placeholder='请输入账号'
-                size='large'
                 v-decorator='[
                                 "username",
                                 {
@@ -23,17 +20,15 @@
                                     ]
                                 }
                             ]'
+                maxlength='11'
+                placeholder='请输入账号'
+                size='large'
               >
                 <a-icon slot='prefix' style='color: rgba(0,0,0,.25)' type='user' />
               </a-input>
             </a-form-item>
             <a-form-item>
               <a-input
-                maxlength='16'
-                placeholder='请输入密码'
-                type='password'
-                size='large'
-                :autocomplete='false'
                 v-decorator='[                                
                                 "password",
                                 {
@@ -45,6 +40,11 @@
                                     ]
                                 }
                             ]'
+                maxlength='16'
+                placeholder='请输入密码'
+                type='password'
+                size='large'
+                :autocomplete='false'
               >
                 <a-icon slot='prefix' style='color: rgba(0,0,0,.25)' type='lock' />
               </a-input>
@@ -52,13 +52,13 @@
             <a-form-item>
               <a-button
                 :disabled='islogin'
-                @click.stop='handlerLogin'
                 class='login-form-button'
                 html-type='submit'
                 size='large'
                 type='primary'
+                @click.stop='handlerLogin'
               >登&emsp;录</a-button>
-              <a @click.stop='handlerForgotPassword' class='login-form-forgot' href='javascript:;'>忘记密码?</a>
+              <a class='login-form-forgot' href='javascript:;' @click.stop='handlerForgotPassword'>忘记密码?</a>
             </a-form-item>
           </a-form>
         </div>

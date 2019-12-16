@@ -1,15 +1,15 @@
 <template>
   <a-tabs
+    v-model='activeKey'
     :hideAdd='hideAdd'
     :class='headTabClass'
     :tabBarGutter='tabBarGutter'
     type='editable-card'
-    v-model='activeKey'
     @change='handleChange'
     @tabClick='handleTabClick'
     @edit='handelEdit'
   >
-    <a-tab-pane :key='item.key' :closable='closable && menus.length>1' v-for='item in menus'>
+    <a-tab-pane v-for='item in menus' :key='item.key' :closable='closable && menus.length>1'>
       <div slot='tab' class='tab-inner'>
         <div class='dot'></div>
         <span>{{item.title}}</span>
@@ -64,6 +64,12 @@ export default {
       default: null
     }
   },
+  data() {
+    return {
+      menus: [],
+      activeKey: 0
+    }
+  },
   computed: {
     headTabClass() {
       return { 'head-tabs': true }
@@ -72,16 +78,6 @@ export default {
     allowClosableTab() {
       return this.closable && this.menus.length > 1
     }
-  },
-  data() {
-    return {
-      menus: [],
-      activeKey: 0
-    }
-  },
-  created() {
-    this.menus = this.items || []
-    this.activeKey = this.defaultKey
   },
   watch: {
     defaultKey(c, o) {
@@ -94,6 +90,10 @@ export default {
         this.menus = c || []
       }
     }
+  },
+  created() {
+    this.menus = this.items || []
+    this.activeKey = this.defaultKey
   },
   methods: {
     handleChange(activeKey) {
