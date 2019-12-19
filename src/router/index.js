@@ -80,23 +80,23 @@ const validateMenuPermission = function(menus) {
 
 /**获得用户相关的菜单或权限信息 */
 const getUserPermissions = function() {
-  let arr = []
-  routes
-    .find(m => m.path === '/')
-    .children.forEach(m => {
-      arr.push(m.name)
-      if (m.children) {
-        Array.prototype.push.apply(
-          arr,
-          m.children.map(n => n.name)
-        )
-      }
-    })
-  console.log('getUserPermissions')
+  // let arr = []
+  // routes
+  //   .find(m => m.path === '/')
+  //   .children.forEach(m => {
+  //     arr.push(m.name)
+  //     if (m.children) {
+  //       Array.prototype.push.apply(
+  //         arr,
+  //         m.children.map(n => n.name)
+  //       )
+  //     }
+  //   })
+  // console.log('getUserPermissions')
   return getAuthUserMenusList()
     .then(({ status_code, message, data: { menus, permissions } = { menus: [], permissions: [] } }) => {
-      Store.commit('setOwnAuth', { menus: arr, permissions })
-      return { menus: arr, permissions }
+      Store.commit('setOwnAuth', { menus, permissions })
+      return { menu, permissions }
     })
     .catch(({ message }) => {
       Vue.prototype.$message.error(message)

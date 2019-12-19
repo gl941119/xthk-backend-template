@@ -91,7 +91,12 @@ export default {
       default: () => {
         return { x: false }
       }
+    },
+	 showHeader: {
+      type: Boolean,
+      default: true
     }
+	
   },
   data() {
     return {
