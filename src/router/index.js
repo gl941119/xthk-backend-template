@@ -1,13 +1,21 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import { relogin } from '../libs/util'
-import { BaseLayout } from '@/layouts'
+import {
+  relogin
+} from '../libs/util'
+import {
+  BaseLayout
+} from '@/layouts'
 import Store from '@/store'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css' //这个样式必须引入
 import generate from './generate-router'
-import { getOwnInfo } from '_axios/user'
-import { getAuthUserMenusList } from '_axios/permission'
+import {
+  getOwnInfo
+} from '_axios/user'
+import {
+  getAuthUserMenusList
+} from '_axios/permission'
 
 Vue.use(Router)
 
@@ -38,12 +46,13 @@ const whiteList = ['noapp', 'login']
  * 
  */
 
-export const routes = [
-  {
+export const routes = [{
     path: '/',
     name: 'home',
     redirect: undefined,
-    meta: { title: '首页' },
+    meta: {
+      title: '首页'
+    },
     children: generate,
     component: BaseLayout //加载方式为按需加载
   },
@@ -51,15 +60,19 @@ export const routes = [
     path: '/login',
     name: 'login',
     redirect: undefined,
-    meta: { title: '首页' },
+    meta: {
+      title: '首页'
+    },
     children: [],
-    component: () => import(/* webpackChunkName: "home" */ '../views/login') //加载方式为按需加载
+    component: () => import( /* webpackChunkName: "home" */ '../views/login') //加载方式为按需加载
   },
   {
     path: '/noapp',
     name: 'noapp',
-    meta: { title: '心田花园--无可用应用' },
-    component: () => import(/* webpackChunkName: "login" */ '../views/error/noapp')
+    meta: {
+      title: '心田花园--无可用应用'
+    },
+    component: () => import( /* webpackChunkName: "login" */ '../views/error/noapp')
   }
 ]
 
@@ -68,18 +81,24 @@ const router = new Router({
 })
 
 /**验证用户菜单权限 */
-const validateMenuPermission = function(menus) {
+const validateMenuPermission = function (menus) {
   let arr = menus
     .filter(m => {
       return m.meta && !m.meta.preRoute
     })
-    .map(({ name }) => name)
-  let { menus: ownMenus = [] } = Store.getters.getOwnAuth || { menus: [] }
+    .map(({
+      name
+    }) => name)
+  let {
+    menus: ownMenus = []
+  } = Store.getters.getOwnAuth || {
+    menus: []
+  }
   return arr.every(m => ownMenus.includes(m))
 }
 
 /**获得用户相关的菜单或权限信息 */
-const getUserPermissions = function() {
+const getUserPermissions = function () {
   // let arr = []
   // routes
   //   .find(m => m.path === '/')
@@ -94,24 +113,46 @@ const getUserPermissions = function() {
   //   })
   // console.log('getUserPermissions')
   return getAuthUserMenusList()
-    .then(({ status_code, message, data: { menus, permissions } = { menus: [], permissions: [] } }) => {
-      Store.commit('setOwnAuth', { menus, permissions })
-      return { menu, permissions }
+    .then(({
+      status_code,
+      message,
+      data: {
+        menus,
+        permissions
+      } = {
+        menus: [],
+        permissions: []
+      }
+    }) => {
+      Store.commit('setOwnAuth', {
+        menus,
+        permissions
+      })
+      return {
+        menus,
+        permissions
+      }
     })
-    .catch(({ message }) => {
+    .catch(({
+      message
+    }) => {
       Vue.prototype.$message.error(message)
-      router.replace({ name: 'noapp' })
+      router.replace({
+        name: 'noapp'
+      })
     })
 }
 
 let isLoadUserInfo = false
 /**获得用户信息 */
-const getUserInfo = function() {
+const getUserInfo = function () {
   const user = Store.getters.getUser
   if (!user) {
     console.count('获得用户信息')
     return getOwnInfo()
-      .then(({ data }) => {
+      .then(({
+        data
+      }) => {
         Store.commit('setUser', data)
         return data
       })
@@ -143,14 +184,18 @@ router.beforeEach(async (to, from, next) => {
 
     if (!ownAuth) {
       next(false)
-      router.replace({ name: 'noapp' })
+      router.replace({
+        name: 'noapp'
+      })
       return
     }
     //已登录，并存在token
     if (name === 'login') {
       //进入login页，重定向到home页
       next(false)
-      router.replace({ name: 'home' })
+      router.replace({
+        name: 'home'
+      })
       return
     }
   } else {
