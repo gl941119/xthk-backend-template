@@ -1,15 +1,15 @@
 <template>
   <a-table
-    :class='[{ "base-table": true }, "infolist"]'
-    :columns='columns'
-    :dataSource='source'
-    :rowSelection='rowSelection'
-    :loading='loading'
-    :pagination='pageSettings'
-    :rowKey='rowKey'
-    :scroll='scroll'
-    @change='pageChange'
-    ref='aTable'
+    ref="aTable"
+    :class="[{ 'base-table': true }, 'infolist']"
+    :columns="columns"
+    :dataSource="source"
+    :rowSelection="rowSelection"
+    :loading="loading"
+    :pagination="currentPageSettings"
+    :rowKey="rowKey"
+    :scroll="scroll"
+    @change="pageChange"
   ></a-table>
 </template>
 
@@ -36,7 +36,7 @@ export default {
       default: false
     },
     pageSettings: {
-      type: [Object, Boolean],
+      type: [Object, Boolean, undefined],
       default: defaultPageSetting
     },
     pagination: {
@@ -92,14 +92,14 @@ export default {
         return { x: false }
       }
     },
-	 showHeader: {
+    showHeader: {
       type: Boolean,
       default: true
     }
-	
   },
   data() {
     return {
+      currentPageSettings: null,
       currentSorted: {},
       currentPage: {
         current: 1,
@@ -132,7 +132,17 @@ export default {
         }
         Object.assign(this.currentPage, p)
       }
+    },
+    pageSettings(c) {
+      if (typeof c === 'undefined') {
+        this.currentPageSettings = defaultPageSetting()
+      } else {
+        this.currentPageSettings = this.pageSettings
+      }
     }
+  },
+  created() {
+    this.currentPageSettings = this.pageSettings === undefined ? defaultPageSetting() : this.pageSettings
   },
   methods: {
     rowClassName() {
