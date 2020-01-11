@@ -11,6 +11,7 @@ module.exports = {
     'no-sparse-arrays': [0],
     'no-undef': [0],
     'no-useless-escape': [0],
+    'sort-vars': [0],
     semi: [0], //强制使用单引号
     quotes: ['error', 'single'],
     //空行最多不能超过100行

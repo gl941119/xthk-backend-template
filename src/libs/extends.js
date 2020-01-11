@@ -10,6 +10,15 @@ if (!Object.isObject) {
   }
 }
 
+if (!Object.isAsyncFunction) {
+  /**
+   * 判定对象是否为async函数
+   */
+  Object.isAsyncFunction = obj => {
+    return Object.prototype.toString.call(obj) === '[object AsyncFunction]'
+  }
+}
+
 if (!Array.prototype.remove) {
   /**
    * 移出满足条件规则的数组元素

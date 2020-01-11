@@ -1,21 +1,13 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import {
-  relogin
-} from '../libs/util'
-import {
-  BaseLayout
-} from '@/layouts'
+import { relogin } from '../libs/util'
+import { BaseLayout } from '@/layouts'
 import Store from '@/store'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css' //这个样式必须引入
 import generate from './generate-router'
-import {
-  getOwnInfo
-} from '_axios/user'
-import {
-  getAuthUserMenusList
-} from '_axios/permission'
+import { getOwnInfo } from '_axios/user'
+import { getAuthUserMenusList } from '_axios/permission'
 
 Vue.use(Router)
 
@@ -46,7 +38,8 @@ const whiteList = ['noapp', 'login']
  * 
  */
 
-export const routes = [{
+export const routes = [
+  {
     path: '/',
     name: 'home',
     redirect: undefined,
@@ -64,7 +57,7 @@ export const routes = [{
       title: '首页'
     },
     children: [],
-    component: () => import( /* webpackChunkName: "home" */ '../views/login') //加载方式为按需加载
+    component: () => import(/* webpackChunkName: "home" */ '../views/login') //加载方式为按需加载
   },
   {
     path: '/noapp',
@@ -72,7 +65,15 @@ export const routes = [{
     meta: {
       title: '心田花园--无可用应用'
     },
-    component: () => import( /* webpackChunkName: "login" */ '../views/error/noapp')
+    component: () => import(/* webpackChunkName: "login" */ '../views/error/noapp')
+  },
+  {
+    path: '/demo',
+    name: 'demo',
+    meta: {
+      title: '心田花园--DEMO'
+    },
+    component: resolve => require(['@/views/demo'], resolve)
   }
 ]
 
@@ -81,61 +82,58 @@ const router = new Router({
 })
 
 /**验证用户菜单权限 */
-const validateMenuPermission = function (menus) {
+const validateMenuPermission = function(menus) {
   let arr = menus
     .filter(m => {
       return m.meta && !m.meta.preRoute
     })
-    .map(({
-      name
-    }) => name)
-  let {
-    menus: ownMenus = []
-  } = Store.getters.getOwnAuth || {
+    .map(({ name }) => name)
+  let { menus: ownMenus = [] } = Store.getters.getOwnAuth || {
     menus: []
   }
   return arr.every(m => ownMenus.includes(m))
 }
 
 /**获得用户相关的菜单或权限信息 */
-const getUserPermissions = function () {
-  // let arr = []
-  // routes
-  //   .find(m => m.path === '/')
-  //   .children.forEach(m => {
-  //     arr.push(m.name)
-  //     if (m.children) {
-  //       Array.prototype.push.apply(
-  //         arr,
-  //         m.children.map(n => n.name)
-  //       )
-  //     }
-  //   })
-  // console.log('getUserPermissions')
-  return getAuthUserMenusList()
-    .then(({
-      status_code,
-      message,
-      data: {
-        menus,
-        permissions
-      } = {
-        menus: [],
-        permissions: []
-      }
-    }) => {
-      Store.commit('setOwnAuth', {
-        menus,
-        permissions
+const getUserPermissions = function() {
+  let arr = []
+
+  if (process.env.NODE_ENV === 'development') {
+    routes
+      .find(m => m.path === '/')
+      .children.forEach(m => {
+        arr.push(m.name)
+        if (m.children) {
+          Array.prototype.push.apply(
+            arr,
+            m.children.map(n => n.name)
+          )
+        }
       })
-      return {
-        menus,
-        permissions
+  }
+  return getAuthUserMenusList()
+    .then(
+      ({
+        status_code,
+        message,
+        data: { menus, permissions } = {
+          menus: [],
+          permissions: []
+        }
+      }) => {
+        process.env.NODE_ENV === 'development' && (menus = arr)
+        Store.commit('setOwnAuth', {
+          menus,
+          permissions
+        })
+        console.log('process.env.NODE_ENV', process.env.NODE_ENV, menus)
+        return {
+          menus,
+          permissions
+        }
       }
-    })
-    .catch(({
-      message
-    }) => {
+    )
+    .catch(({ message }) => {
       Vue.prototype.$message.error(message)
       router.replace({
         name: 'noapp'
@@ -145,14 +143,12 @@ const getUserPermissions = function () {
 
 let isLoadUserInfo = false
 /**获得用户信息 */
-const getUserInfo = function () {
+const getUserInfo = function() {
   const user = Store.getters.getUser
   if (!user) {
     console.count('获得用户信息')
     return getOwnInfo()
-      .then(({
-        data
-      }) => {
+      .then(({ data }) => {
         Store.commit('setUser', data)
         return data
       })

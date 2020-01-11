@@ -14,6 +14,7 @@
 </template>
 
 <script>
+import { formatPagination } from '@/libs/tools'
 const defaultPageSetting = () => {
   return {
     pageSize: 10, // 默认每页显示数量
@@ -112,7 +113,10 @@ export default {
       if (c != null) {
         let t = this.$refs.aTable
         let p = t.$children[0].sPagination
-        this.pageSettings.total = c.total || this.total || 0
+        if (typeof this.pageSettings !== 'boolean') {
+          this.pageSettings.total = c.total || this.total || 0
+          this.currentPageSettings && (this.currentPageSettings.total = this.pageSettings.total)
+        }
 
         if (c.current_page > c.last_page) {
           this.pageChange(

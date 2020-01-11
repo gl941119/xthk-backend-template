@@ -1,5 +1,5 @@
 <script>
-import { baseViewMixin } from '@/mixins/baseView.js'
+import baseIndexMixins from '@/mixins/base-index-mixins'
 import {
   getRbacGroupList,
   rbacGroupCreate,
@@ -9,9 +9,10 @@ import {
   getRbacGroupMenuPermissions
 } from '_axios/permission'
 export default {
-  mixins: [baseViewMixin],
+  mixins: [baseIndexMixins],
   data() {
     return {
+      modalTitle: '配置权限',
       searchPlaceholder: '请输入权限组名称',
       columns: [
         { title: '序号', dataIndex: 'num' },
@@ -61,11 +62,7 @@ export default {
       isConfig: false // 当前是否配置
     }
   },
-  computed: {
-    modalTitle() {
-      return this.isConfig ? '配置权限' : `${this.currentInfo.id ? '编辑' : '新增'}权限组`
-    }
-  },
+  computed: {},
   watch: {
     currentInfo(c, o) {
       if (c) {
@@ -73,41 +70,20 @@ export default {
         this.symbolCount = c.symbol ? c.symbol.length : 0
         this.descCount = c.desc ? c.desc.length : 0
       }
+    },
+    isConfig(c) {
+      this.modalTitle = c ? '配置权限' : `${this.currentInfo.id ? '编辑' : '新增'}权限组`
     }
   },
   created() {
     Object.assign(this.query, { name: '' })
+
+    /**设置获得列表信息调用接口*/
+    this.api.getInfoList = getRbacGroupList
+
     this._cacheMap = new Map()
   },
   methods: {
-    /**获得列表数据 */
-    async getInfoList(page) {
-      if (page) {
-        this.query.page = page
-      }
-      this.loading = true
-      await getRbacGroupList(this.query)
-        .then(
-          ({
-            status_code,
-            message,
-            data: { meta: { pagination }, data } = {
-              meta: { pagination: {} },
-              data: []
-            }
-          }) => {
-            if (status_code !== 200) {
-              this.$message.error(message)
-            } else {
-              this.setDataSource(data, pagination)
-            }
-          }
-        )
-        .catch(({ message }) => {
-          this.$message.error(message)
-        })
-      this.loading = false
-    },
     /**获得权限组配置权限，三级联动数据结构*/
     getGroupMenuPpermissionsInfo() {
       getRbacGroupMenuPermissions({ id: this.currentInfo.id })
@@ -211,9 +187,9 @@ export default {
       }
     },
     /**输入出插槽内容 */
-    renderSlotModal() {
+    renderModalSlot() {
       let vnode = (
-        <div slot="modal" style="overflow:auto;">
+        <div style="overflow:auto;">
           <a-tree
             checkable
             style="height:400px"
@@ -274,7 +250,7 @@ export default {
         ]
 
         vnode = (
-          <a-form form={this.form} slot="modal">
+          <a-form form={this.form}>
             <a-form-item
               label="权限组名称"
               label-col={this.formItemLayout.labelCol}
@@ -303,11 +279,11 @@ export default {
           </a-form>
         )
       }
+
       return vnode
     },
-    async onHandleModalOk(values) {
+    async onModalOk(values) {
       let r = false
-      debugger
       if (this.isConfig) {
         //当前为配置操作
         let temp = new Map()
@@ -389,7 +365,7 @@ export default {
     handleCheck(checkedKeys, e) {
       this.checkedKeys = checkedKeys
     },
-    onFieldsChange(props, fields) {
+    handlFormFieldsChange(props, fields) {
       if (fields.name && fields.name.value) {
         this.nameCount = fields.name.value.length
       }

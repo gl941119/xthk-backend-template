@@ -1,52 +1,58 @@
 <template>
   <a-layout-sider
-    :width='width'
-    :theme='theme'
-    :class='"side"'
-    :collapsible='collapsible'
-    v-model='myCollapsed'
-    :trigger='null'
+    v-model="myCollapsed"
+    class="side"
+    :class="collapsedClass"
+    :width="width"
+    :theme="theme"
+    :collapsible="collapsible"
+    :collapsedWidth="40"
+    :trigger="null"
   >
-    <div class='side-inner'>
-      <div class='avatar'>
-        <a-avatar :size='64' icon='user' v-if='!user.avatar' />
-        <a-avatar :size='64' v-else :src='user.avatar'></a-avatar>
-        <div class='name'>{{user.real_name}}</div>
+    <div class="side-inner">
+      <div class="avatar">
+        <a-avatar v-if="!user.avatar" :size="!myCollapsed ? 64 : 32" icon="user" />
+        <a-avatar v-else :size="!myCollapsed ? 64 : 32" :src="user.avatar"></a-avatar>
+        <div class="name">{{ user.real_name }}</div>
       </div>
-      <a-icon class='trigger' :type='triggerType' @click='()=> myCollapsed = !myCollapsed' v-if='collapsible' />
-      <div class='menu-wrap'>
+      <a-icon
+        v-if="collapsible"
+        :title="collapsibleTitle"
+        class="trigger"
+        :type="triggerType"
+        @click="() => (myCollapsed = !myCollapsed)"
+      />
+      <div class="menu-wrap">
         <a-menu
-          :collapsed='collapsed'
-          :theme='theme'
-          mode='inline'
-          v-model='selectedKeys'
-          :defaultOpenKeys='defaultOpenKeys'
-          @click='handleMenuClick'
-          @select='handleMenuSelect'
+          v-model="selectedKeys"
+          :inlineCollapsed="myCollapsed"
+          :theme="theme"
+          mode="inline"
+          :defaultOpenKeys="defaultOpenKeys"
+          @click="handleMenuClick"
+          @select="handleMenuSelect"
         >
-          <template v-for='item in menus'>
-            <a-menu-item v-if='item.showChildren && !item.showChildren' :key='item.name'>
-              <a-icon :type='item.meta.icon' v-if='item.meta.icon'></a-icon>
+          <template v-for="item in menus">
+            <a-menu-item v-if="item.showChildren && !item.showChildren" :key="item.name">
+              <a-icon v-if="item.meta.icon" :type="item.meta.icon"></a-icon>
               <span>{{ item.meta.title }}</span>
             </a-menu-item>
-            <a-menu-item v-if='item.showChildren && item.showChildren.length===1' :key='item.showChildren[0].name'>
+            <a-menu-item v-if="item.showChildren && item.showChildren.length === 1" :key="item.showChildren[0].name">
               <a-icon
-                :type='item.showChildren[0].meta.icon ||item.meta.icon'
-                v-if='item.showChildren[0].meta.icon || item.meta.icon'
+                v-if="item.showChildren[0].meta.icon || item.meta.icon"
+                :type="item.showChildren[0].meta.icon || item.meta.icon"
               ></a-icon>
               <span>
-                {{
-                item.showChildren[0].meta.title
-                }}
+                {{ item.showChildren[0].meta.title }}
               </span>
             </a-menu-item>
-            <a-sub-menu v-if='item.showChildren && item.showChildren.length>1' :key='item.name'>
-              <template slot='title'>
-                <a-icon :type='item.meta.icon' v-if='item.meta && item.meta.icon'></a-icon>
+            <a-sub-menu v-if="item.showChildren && item.showChildren.length > 1" :key="item.name">
+              <template v-slot:title>
+                <a-icon v-if="item.meta && item.meta.icon" :type="item.meta.icon"></a-icon>
                 <span>{{ item.meta.title }}</span>
               </template>
-              <a-menu-item v-for='child in item.showChildren' :key='child.name'>
-                <a-icon :type='child.meta.icon' v-if='child.meta.icon'></a-icon>
+              <a-menu-item v-for="child in item.showChildren" :key="child.name">
+                <a-icon v-if="child.meta.icon" :type="child.meta.icon"></a-icon>
                 <span>{{ child.meta.title }}</span>
               </a-menu-item>
             </a-sub-menu>
@@ -116,11 +122,13 @@ export default {
     },
     triggerType() {
       return this.myCollapsed ? 'menu-unfold' : 'menu-fold'
+    },
+    collapsedClass() {
+      return this.myCollapsed ? 'my-collapsed' : ''
+    },
+    collapsibleTitle() {
+      return this.myCollapsed ? '展开菜单栏' : '收缩菜单栏'
     }
-  },
-  created() {
-    this.selectedKeys = this.defaultSelectedKeys
-    this.myCollapsed = this.collapsed
   },
   watch: {
     defaultSelectedKeys(c, o) {
@@ -141,6 +149,10 @@ export default {
         this.myCollapsed = c
       }
     }
+  },
+  created() {
+    this.selectedKeys = this.defaultSelectedKeys
+    this.myCollapsed = this.collapsed
   },
   methods: {
     /*查找对应name的菜单项 */
@@ -184,12 +196,34 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .side {
   height: 100%;
   position: relative;
   background-color: #fff;
   //box-shadow: 2px 0 6px rgba(0, 21, 41, 0.35);
+
+  &.my-collapsed {
+    .avatar {
+      height: 80px;
+      margin-top: 10px;
+    }
+    .name {
+      display: none;
+    }
+    .ant-menu-inline-collapsed {
+      width: 40px !important;
+
+      .ant-menu-submenu-selected {
+        background-color: #e6f7ff;
+      }
+
+      .ant-menu-submenu-title {
+        padding: 0 !important;
+        text-align: center;
+      }
+    }
+  }
 
   .ant-menu-inline,
   .ant-menu-vertical,

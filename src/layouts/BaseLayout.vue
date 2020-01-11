@@ -1,22 +1,23 @@
 <template>
-  <a-layout :class='"base-layout"'>
+  <a-layout :class="'base-layout'">
     <!--左侧菜单栏-->
     <sider-menu
-      :menus='menus'
-      :defaultOpenKeys='openKeys'
-      :defaultSelectedKeys='selectedMenuKeys'
-      @menuSelect='handleMenuSelect'
+      :menus="menus"
+      :defaultOpenKeys="openKeys"
+      :defaultSelectedKeys="selectedMenuKeys"
+      :collapsible="collapsible"
+      @menuSelect="handleMenuSelect"
     ></sider-menu>
-    <a-layout-content :class='baseContentClass'>
+    <a-layout-content :class="baseContentClass">
       <head-tabs
-        v-if='allowShowGlobalHeadTabs'
-        :items.sync='tabs'
-        :defaultKey='defaultTabKey'
-        @tabSelect='handleTabSelect'
-        @tabRemove='handleTabRemove'
+        v-if="allowShowGlobalHeadTabs"
+        :items.sync="tabs"
+        :defaultKey="defaultTabKey"
+        @tabSelect="handleTabSelect"
+        @tabRemove="handleTabRemove"
       ></head-tabs>
-      <div class='info-content'>
-        <keep-alive :include='keepAliveInfos.value'>
+      <div class="info-content">
+        <keep-alive :include="keepAliveInfos.value">
           <router-view></router-view>
         </keep-alive>
       </div>
@@ -38,6 +39,7 @@ export default {
   },
   data() {
     return {
+      collapsible: true,
       keepAliveInfos,
       allowShowGlobalHeadTabs,
       selectedMenuKeys: [],
@@ -59,7 +61,6 @@ export default {
     //成生菜单数据
     const data = await this.generateMenus()
     this.menus = data
-
     this._initInfo()
   },
   mounted() {},
@@ -92,7 +93,7 @@ export default {
         if (menu) {
           this.selectedMenuKeys = [menu.name]
           menu.parent && this.openKeys.push(menu.parent)
-          this.$router.push({ name: menu.name })
+          if (this.$route.name !== menu.name) this.$router.push({ name: menu.name })
           this.addTab({ name: menu.name, title: menu.meta.title })
         } else {
           this.$router.replace({ name: 'noapp' })

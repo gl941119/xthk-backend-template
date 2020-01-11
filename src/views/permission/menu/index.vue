@@ -1,48 +1,5 @@
-<template>
-  <base-view
-    ref='bView'
-    title='菜单配置'
-    addButtonIconType='scan'
-    addButtonText='扫描'
-    searchPlaceholder='请输入菜单展示名称'
-    :addButtonLoading='addButtonLoading'
-    :handleAdd='handleAdd'
-    :handleSearch='handleSearch'
-    :dataSource='dataSource'
-    :pagination='pagination'
-    :columns='columns'
-    :infoListloading='loading'
-    :modalTitle='"配置菜单权限"'
-    :showModal='showModal'
-    :showModalSecondTitle='false'
-    :handlerModalCancel='handlerModalCancel'
-    :handlerModalClose='handlerModalClose'
-    :onPageChange='onPageChange'
-    :handlerModalOk='handlerModalOk'
-    :confirmLoading='isInStore'
-    :modalWidth='800'
-  >
-    <div slot='modal'>
-      <div style='margin:0 auto;width:710px'>
-        <a-transfer
-          :listStyle='listStyle'
-          :dataSource='allTreeDataSource'
-          :titles='["接口列表", "已添加接口列表"]'
-          :operations='["添加", "移出"]'
-          :showSearch='true'
-          :targetKeys='targetKeys'
-          :selectedKeys='selectedKeys'
-          :render='item => item.title'
-          @selectChange='selectChange'
-          @change='handleChange'
-        />
-      </div>
-    </div>
-  </base-view>
-</template>
-
 <script>
-import { baseViewMixin } from '@/mixins/baseView.js'
+import baseIndexMixins from '@/mixins/base-index-mixins'
 import routers from '@/router/generate-router'
 // import employee from '@/router/employee.js'
 import {
@@ -55,10 +12,16 @@ import {
 } from '_axios/permission'
 
 export default {
-  name: 'Interface',
-  mixins: [baseViewMixin],
+  name: 'PermissionMenu',
+  mixins: [baseIndexMixins],
   data() {
     return {
+      modalTitle: '配置菜单权限',
+      title: '菜单配置',
+      addButtonIconType: 'scan',
+      addButtonText: '扫描',
+      searchPlaceholder: '请输入菜单展示名称',
+      modalWidth: 800,
       columns: [
         { title: '序号', dataIndex: 'num' },
         { title: '菜单英文名 ', dataIndex: 'name' },
@@ -108,31 +71,38 @@ export default {
     }
   },
   created() {
+    this.__init_render_slots__()
     Object.assign(this.query, { meta_title: '' })
-    //this.getInfoList()
+
+    /**设置获得列表信息调用接口*/
+    this.api.getInfoList = getRbacMenuList
   },
   methods: {
-    /**获得列表信息.*/
-    getInfoList(page) {
-      if (page === 1) {
-        this.query.page = 1
+    /**设置页面插槽 */
+    __init_render_slots__() {
+      this.$slots = {
+        /**默认modal弹出窗内容 */
+        modal: props => {
+          return (
+            <div>
+              <div style="margin:0 auto;width:710px">
+                <a-transfer
+                  listStyle={this.listStyle}
+                  dataSource={this.allTreeDataSource}
+                  titles={['接口列表', '已添加接口列表']}
+                  operations={['添加', '移出']}
+                  showSearch={true}
+                  targetKeys={this.targetKeys}
+                  selectedKeys={this.selectedKeys}
+                  render={item => item.title}
+                  on-selectChange={this.selectChange}
+                  on-change={this.handleChange}
+                />
+              </div>
+            </div>
+          )
+        }
       }
-      return getRbacMenuList(this.query)
-        .then(
-          ({
-            status_code,
-            message,
-            data: { meta: { pagination }, data } = {
-              meta: { pagination: {} },
-              data: []
-            }
-          }) => {
-            this.setDataSource(data, pagination)
-          }
-        )
-        .catch(({ message }) => {
-          this.$message.error(message)
-        })
     },
     /**添加按钮事件。*/
     handleAdd() {
@@ -163,6 +133,7 @@ export default {
         }
       })
     },
+    /**重写默认框查询事件 */
     handleSearch: debounce(function(value) {
       this.query.meta_title = value
       this.getInfoList(1)
@@ -234,7 +205,7 @@ export default {
       this.showModal = true
       this.isConfigMenu = false
     },
-    async onHandleModalOk(values) {
+    async onModalOk(values) {
       let r = false
       if (!this.targetKeys || !this.targetKeys.length) {
         this.$message.warning('没有选中的接口信息')

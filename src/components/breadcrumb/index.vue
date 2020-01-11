@@ -1,15 +1,11 @@
 <template>
-  <a-breadcrumb :class='"breadcrumb"' :routes='breadcrumb'>
-    <template slot='itemRender' slot-scope='{ route, params, routes }'>
-      <span v-if='routes.indexOf(route)===0 ||  routes.indexOf(route) === routes.length - 1'>
-        {{
-        route.breadcrumbName
-        }}
+  <a-breadcrumb :class="'breadcrumb'" :routes="breadcrumb">
+    <template v-slot:itemRender="{ route, params, routes }">
+      <span v-if="routes.indexOf(route) === 0 || routes.indexOf(route) === routes.length - 1">
+        {{ route.breadcrumbName }}
       </span>
-      <router-link v-else :to='{ name: route.name }'>
-        {{
-        route.breadcrumbName
-        }}
+      <router-link v-else :to="{ name: route.name }">
+        {{ route.breadcrumbName }}
       </router-link>
     </template>
   </a-breadcrumb>

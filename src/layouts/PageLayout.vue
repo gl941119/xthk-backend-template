@@ -1,10 +1,12 @@
 <template>
-  <div class='layout'>
-    <bread-crumb v-if='showBreadCrumb'></bread-crumb>
-    <a-card class='layout-card' :title='title' :bordered='false'>
-      <div slot='extra'>
-        <slot name='extra'></slot>
-      </div>
+  <div class="layout">
+    <bread-crumb v-if="showBreadCrumb"></bread-crumb>
+    <a-card class="layout-card" :title="title" :bordered="false">
+      <template v-slot:extra>
+        <div>
+          <slot name="extra"></slot>
+        </div>
+      </template>
       <slot></slot>
     </a-card>
   </div>
@@ -14,14 +16,14 @@
 import BreadCrumb from '_c/breadcrumb'
 export default {
   name: 'PageLayout',
+  components: {
+    BreadCrumb
+  },
   props: {
     showBreadCrumb: {
       type: Boolean,
       default: true
     }
-  },
-  components: {
-    BreadCrumb
   },
   computed: {
     title() {

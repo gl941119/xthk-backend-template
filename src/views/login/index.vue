@@ -1,64 +1,65 @@
 <template>
-  <div class='login'>
-    <div class='login-inner'>
-      <div class='login-inner-form-wrap'>
-        <div class='login-item base'>
-          <div class='top'>
-            <span class='title'>账号登录</span>
+  <div class="login">
+    <div class="login-inner">
+      <div class="login-inner-form-wrap">
+        <div class="login-item base">
+          <div class="top">
+            <span class="title">账号登录</span>
           </div>
-          <a-form :form='form'>
+          <a-form :form="form">
             <a-form-item>
               <a-input
-                v-decorator='[
-                                "username",
-                                {
-                                    rules: [
-                                        {
-                                            required: true,
-                                            message: "请输入您的账号!"
-                                        }
-                                    ]
-                                }
-                            ]'
-                maxlength='11'
-                placeholder='请输入账号'
-                size='large'
+                v-decorator="[
+                  'username',
+                  {
+                    rules: [
+                      {
+                        required: true,
+                        message: '请输入您的账号!'
+                      }
+                    ]
+                  }
+                ]"
+                maxlength="11"
+                placeholder="请输入账号"
+                size="large"
               >
-                <a-icon slot='prefix' style='color: rgba(0,0,0,.25)' type='user' />
+                <a-icon v-slot:prefix style="color: rgba(0,0,0,.25)" type="user" />
               </a-input>
             </a-form-item>
             <a-form-item>
               <a-input
-                v-decorator='[                                
-                                "password",
-                                {
-                                    rules: [
-                                        {
-                                            required: true,
-                                            message: "请输入您的密码!"
-                                        }
-                                    ]
-                                }
-                            ]'
-                maxlength='16'
-                placeholder='请输入密码'
-                type='password'
-                size='large'
-                :autocomplete='false'
+                v-decorator="[
+                  'password',
+                  {
+                    rules: [
+                      {
+                        required: true,
+                        message: '请输入您的密码!'
+                      }
+                    ]
+                  }
+                ]"
+                maxlength="16"
+                placeholder="请输入密码"
+                type="password"
+                size="large"
+                :autocomplete="false"
               >
-                <a-icon slot='prefix' style='color: rgba(0,0,0,.25)' type='lock' />
+                <a-icon v-slot:prefix style="color: rgba(0,0,0,.25)" type="lock" />
               </a-input>
             </a-form-item>
             <a-form-item>
               <a-button
-                :disabled='islogin'
-                class='login-form-button'
-                html-type='submit'
-                size='large'
-                type='primary'
-                @click.stop='handlerLogin'
-              >登&emsp;录</a-button>
-              <a class='login-form-forgot' href='javascript:;' @click.stop='handlerForgotPassword'>忘记密码?</a>
+                :disabled="islogin"
+                class="login-form-button"
+                html-type="submit"
+                size="large"
+                type="primary"
+                @click.stop="handlerLogin"
+                >登&emsp;录</a-button
+              >
+              <a class="login-form-forgot" href="javascript:;" @click.stop="handlerForgotPassword">忘记密码?</a>
             </a-form-item>
           </a-form>
         </div>

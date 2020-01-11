@@ -1,24 +1,5 @@
-<template>
-  <base-view
-    ref='bView'
-    title='接口列表'
-    addButtonIconType='scan'
-    addButtonText='扫描'
-    searchPlaceholder='请输入接口名称或地址'
-    :addButtonLoading='addButtonLoading'
-    :handleAdd='handleAdd'
-    :handleSearch='handleSearch'
-    :dataSource='dataSource'
-    :pagination='pagination'
-    :columns='columns'
-    :infoListloading='loading'
-    :onPageChange='onPageChange'
-  ></base-view>
-</template>
-
 <script>
-import BaseView from '_layout/BaseViewLayout'
-import { baseViewMixin } from '@/mixins/baseView.js'
+import baseIndexMixins from '@/mixins/base-index-mixins'
 import {
   getRbacPermissionsList,
   rbacPermissionsWhite,
@@ -26,13 +7,14 @@ import {
   rbacPermissionsScanapi
 } from '_axios/permission'
 export default {
-  name: 'Interface',
-  components: {
-    BaseView
-  },
-  mixins: [baseViewMixin],
+  name: 'PermissionInterface',
+  mixins: [baseIndexMixins],
   data() {
     return {
+      title: '接口列表',
+      addButtonIconType: 'scan',
+      addButtonText: '扫描',
+      searchPlaceholder: '请输入接口名称或地址',
       columns: [
         { title: '序号', dataIndex: 'num', width: 160 },
         { title: '接口名称', dataIndex: 'name' },
@@ -73,31 +55,11 @@ export default {
   },
   created() {
     Object.assign(this.query, { keyword: '' })
-    //this.getInfoList()
+
+    /**设置获得列表信息调用接口*/
+    this.api.getInfoList = getRbacPermissionsList
   },
   methods: {
-    /**获得列表信息.*/
-    getInfoList(page) {
-      if (page === 1) {
-        this.query.page = 1
-      }
-      return getRbacPermissionsList(this.query)
-        .then(
-          ({
-            status_code,
-            message,
-            data: { meta: { pagination }, data } = {
-              meta: { pagination: {} },
-              data: []
-            }
-          }) => {
-            this.setDataSource(data, pagination)
-          }
-        )
-        .catch(({ message }) => {
-          this.$message.error(message)
-        })
-    },
     /**添加按钮事件。*/
     async handleAdd() {
       this.$confirm({

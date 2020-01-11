@@ -1,19 +1,21 @@
 <template>
   <a-tabs
-    v-model='activeKey'
-    :hideAdd='hideAdd'
-    :class='headTabClass'
-    :tabBarGutter='tabBarGutter'
-    type='editable-card'
-    @change='handleChange'
-    @tabClick='handleTabClick'
-    @edit='handelEdit'
+    v-model="activeKey"
+    :hideAdd="hideAdd"
+    :class="headTabClass"
+    :tabBarGutter="tabBarGutter"
+    type="editable-card"
+    @change="handleChange"
+    @tabClick="handleTabClick"
+    @edit="handelEdit"
   >
-    <a-tab-pane v-for='item in menus' :key='item.key' :closable='closable && menus.length>1'>
-      <div slot='tab' class='tab-inner'>
-        <div class='dot'></div>
-        <span>{{item.title}}</span>
-      </div>
+    <a-tab-pane v-for="item in menus" :key="item.key" :closable="closable && menus.length > 1">
+      <template v-slot:tab>
+        <div class="tab-inner">
+          <div class="dot"></div>
+          <span>{{ item.title }}</span>
+        </div>
+      </template>
     </a-tab-pane>
   </a-tabs>
 </template>
@@ -100,14 +102,20 @@ export default {
       if (this.tabSelect) {
         this.tabClick(this.menus.find(m => m.key === activeKey))
       } else {
-        this.$emit('tabSelect', this.menus.find(m => m.key === activeKey))
+        this.$emit(
+          'tabSelect',
+          this.menus.find(m => m.key === activeKey)
+        )
       }
     },
     handleTabClick(activeKey) {
       if (this.tabClick) {
         this.tabClick(this.menus.find(m => m.key === activeKey))
       } else {
-        this.$emit('tabClick', this.menus.find(m => m.key === activeKey))
+        this.$emit(
+          'tabClick',
+          this.menus.find(m => m.key === activeKey)
+        )
       }
     },
     handelEdit(targetKey, action) {

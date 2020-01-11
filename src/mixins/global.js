@@ -26,6 +26,21 @@ if (process.env.NODE_ENV === 'production') {
   }
 }
 Vue.mixin({
+  data() {
+    return {
+      /**数据是否加载中 */
+      isLoading: false,
+      /**数据保存中 */
+      isSaving: false,
+      /**
+       *form表单，单行标签与输入框的占位 ant-design-form使用
+       */
+      formItemLayout: {
+        labelCol: { span: 5 },
+        wrapperCol: { span: 19 }
+      }
+    }
+  },
   computed: {
     ...mapGetters({
       ownAuth: 'getOwnAuth',
@@ -43,21 +58,6 @@ Vue.mixin({
     /**允许删除*/
     allowDelete() {
       return true
-    }
-  },
-  data() {
-    return {
-      /**数据是否加载中 */
-      isLoading: false,
-      /**数据保存中 */
-      isSaving: false,
-      /**
-       *form表单，单行标签与输入框的占位 ant-design-form使用
-       */
-      formItemLayout: {
-        labelCol: { span: 5 },
-        wrapperCol: { span: 19 }
-      }
     }
   },
   methods: {
