@@ -2,7 +2,7 @@ const CompressionPlugin = require('compression-webpack-plugin')
 const LessThemePlugin = require('webpack-less-theme-plugin')
 const isProduction = process.env.NODE_ENV === 'production'
 const path = require('path')
-
+const myConfig = require('./src/config/index')
 const resolve = dir => {
   return path.join(__dirname, dir)
 }
@@ -145,6 +145,11 @@ module.exports = {
       .set('_axios', resolve('src/libs/axios/modules'))
       .set('_scss', resolve('src/assets/scss'))
       .set('_layout', resolve('src/layouts'))
+
+    config.plugin('define').tap(args => {
+      args[0].VERSION = '"' + (myConfig.version || '1.0.0') + '"'
+      return args
+    })
   },
   configureWebpack: config => {
     if (isProduction) {
