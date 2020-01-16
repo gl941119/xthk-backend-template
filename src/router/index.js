@@ -35,7 +35,27 @@ const whiteList = ['noapp', 'login']
       children: [],
       component:            
  * }
- * 
+ *  preRoute:可以为数组用来模拟 多级路由的层级
+ *  preRoute:[
+ *    { //上级路由信息
+            name:"1级",
+            meta:{
+                title:""
+            }
+      },
+      { //上级路由信息
+            name:"2级",
+            meta:{
+                title:""
+            }
+      },
+      { //上级路由信息
+            name:"3级",
+            meta:{
+                title:""
+            }
+      },
+ *  ]
  */
 
 export const routes = [

@@ -73,8 +73,22 @@ export default {
     _init_menu_default_select() {
       //设置菜单项的默认选中值
       if (this.menus && this.menus.length) {
-        const { name, path } = this.$route
+        let {
+          name,
+          path,
+          meta: { preRoute }
+        } = this.$route
         let menu
+        //如果是三级以上的菜单路由，取所属的第二级路由
+        if (preRoute) {
+          if (Object.isObject(preRoute)) {
+            name = preRoute.name
+          } else {
+            if (Array.isArray(preRoute) && preRoute.length) {
+              name = preRoute[0].name
+            }
+          }
+        }
         if (path === '/') {
           menu = this.menus.find(m => !m.hidden)
           if (menu && menu.showChildren) {
@@ -93,7 +107,7 @@ export default {
         if (menu) {
           this.selectedMenuKeys = [menu.name]
           menu.parent && this.openKeys.push(menu.parent)
-          if (this.$route.name !== menu.name) this.$router.push({ name: menu.name })
+          if (this.$route.name !== menu.name && !preRoute) this.$router.push({ name: menu.name })
           this.addTab({ name: menu.name, title: menu.meta.title })
         } else {
           this.$router.replace({ name: 'noapp' })

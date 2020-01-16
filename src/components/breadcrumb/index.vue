@@ -25,7 +25,12 @@ export default {
       let temp = []
       info.forEach((n, i) => {
         if (n.meta && n.meta.preRoute) {
-          temp.push({ ...n.meta.preRoute })
+          let pr = n.meta.preRoute
+          if (Object.isObject(pr)) {
+            temp.push({ ...n.meta.preRoute })
+          } else if (Array.isArray(pr) && pr.length) {
+            temp = [...temp, ...pr]
+          }
         }
         temp.push({ ...n })
       })
