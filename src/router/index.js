@@ -25,6 +25,7 @@ const whiteList = ['noapp', 'login']
           title: '',
           icon:'',//图标名称
           showMenu:true, //是否显示菜单
+          allowSingleDisplay:true, //允许单一子菜单合并显示(当前子菜只存在一个时，父级菜单直接显示为子菜单)
           preRoute:{ //上级路由信息
             name:"",
             meta:{
@@ -101,19 +102,6 @@ const router = new Router({
   routes
 })
 
-/**验证用户菜单权限 */
-const validateMenuPermission = function(menus) {
-  let arr = menus
-    .filter(m => {
-      return m.meta && !m.meta.preRoute
-    })
-    .map(({ name }) => name)
-  let { menus: ownMenus = [] } = Store.getters.getOwnAuth || {
-    menus: []
-  }
-  return arr.every(m => ownMenus.includes(m))
-}
-
 /**获得用户相关的菜单或权限信息 */
 const getUserPermissions = function() {
   let arr = []
@@ -134,8 +122,6 @@ const getUserPermissions = function() {
   return getAuthUserMenusList()
     .then(
       ({
-        status_code,
-        message,
         data: { menus, permissions } = {
           menus: [],
           permissions: []
@@ -161,7 +147,6 @@ const getUserPermissions = function() {
     })
 }
 
-let isLoadUserInfo = false
 /**获得用户信息 */
 const getUserInfo = function() {
   const user = Store.getters.getUser
@@ -225,7 +210,7 @@ router.beforeEach(async (to, from, next) => {
   next()
 })
 
-router.afterEach((to, from) => {
+router.afterEach(() => {
   NProgress.done()
 })
 export default router

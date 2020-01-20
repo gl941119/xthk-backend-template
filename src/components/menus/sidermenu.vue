@@ -33,29 +33,37 @@
           @select="handleMenuSelect"
         >
           <template v-for="item in menus">
-            <a-menu-item v-if="item.showChildren && !item.showChildren" :key="item.name">
-              <a-icon v-if="item.meta.icon" :type="item.meta.icon"></a-icon>
-              <span>{{ item.meta.title }}</span>
-            </a-menu-item>
-            <a-menu-item v-if="item.showChildren && item.showChildren.length === 1" :key="item.showChildren[0].name">
-              <a-icon
-                v-if="item.showChildren[0].meta.icon || item.meta.icon"
-                :type="item.showChildren[0].meta.icon || item.meta.icon"
-              ></a-icon>
-              <span>
-                {{ item.showChildren[0].meta.title }}
-              </span>
-            </a-menu-item>
-            <a-sub-menu v-if="item.showChildren && item.showChildren.length > 1" :key="item.name">
-              <template v-slot:title>
-                <a-icon v-if="item.meta && item.meta.icon" :type="item.meta.icon"></a-icon>
+            <!--允许显示子菜单-->
+            <template v-if="item.showChildren">
+              <!--显示子菜单内容为空-->
+              <a-menu-item v-if="!item.showChildren.length" :key="item.name">
+                <a-icon v-if="item.meta.icon" :type="item.meta.icon"></a-icon>
                 <span>{{ item.meta.title }}</span>
-              </template>
-              <a-menu-item v-for="child in item.showChildren" :key="child.name">
-                <a-icon v-if="child.meta.icon" :type="child.meta.icon"></a-icon>
-                <span>{{ child.meta.title }}</span>
               </a-menu-item>
-            </a-sub-menu>
+              <!--子菜单只有单一一项时 并且允许单一项时父级菜单显示为子菜单-->
+              <a-menu-item
+                v-else-if="item.showChildren.length === 1 && item.meta.allowSingleDisplay !== false"
+                :key="item.showChildren[0].name"
+              >
+                <a-icon
+                  v-if="item.showChildren[0].meta.icon || item.meta.icon"
+                  :type="item.showChildren[0].meta.icon || item.meta.icon"
+                ></a-icon>
+                <span>
+                  {{ item.showChildren[0].meta.title }}
+                </span>
+              </a-menu-item>
+              <a-sub-menu v-else :key="item.name">
+                <template v-slot:title>
+                  <a-icon v-if="item.meta && item.meta.icon" :type="item.meta.icon"></a-icon>
+                  <span>{{ item.meta.title }}</span>
+                </template>
+                <a-menu-item v-for="child in item.showChildren" :key="child.name">
+                  <a-icon v-if="child.meta.icon" :type="child.meta.icon"></a-icon>
+                  <span>{{ child.meta.title }}</span>
+                </a-menu-item>
+              </a-sub-menu>
+            </template>
           </template>
         </a-menu>
       </div>
@@ -153,6 +161,7 @@ export default {
   created() {
     this.selectedKeys = this.defaultSelectedKeys
     this.myCollapsed = this.collapsed
+    debugger
   },
   methods: {
     /*查找对应name的菜单项 */
