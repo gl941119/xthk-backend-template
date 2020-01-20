@@ -218,6 +218,10 @@ export default {
         background-color: #e6f7ff;
       }
 
+      > .ant-menu-item {
+        padding: initial !important;
+        text-align: center;
+      }
       .ant-menu-submenu-title {
         padding: 0 !important;
         text-align: center;
