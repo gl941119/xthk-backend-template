@@ -119,12 +119,8 @@ export default {
           let param = { data: [...routers] }
           await rbacMenuImport(param)
             .then(({ status_code, message }) => {
-              if (status_code === 200) {
-                this.$message.success(message)
-                this.getInfoList(1)
-              } else {
-                this.$message.error(message)
-              }
+              this.$message.success(message)
+              this.getInfoList(1)
             })
             .catch(({ message }) => {
               this.$message.error(message)
@@ -145,13 +141,8 @@ export default {
 
       await rbacMenuToggleEnable({ menu_id: record.id })
         .then(({ status_code, message, data: { status } }) => {
-          if (status_code === 200) {
-            this.$message.success(message)
-            this.getInfoList()
-          } else {
-            this.$message.error(message)
-            record.status = oldstatus
-          }
+          this.$message.success(message)
+          this.getInfoList()
         })
         .catch(({ message }) => {
           record.status = oldstatus
@@ -162,11 +153,7 @@ export default {
     async handleWhiteChange(text, record, dataIndex, checked) {
       await rbacPermissionsWhite({ id: record.id })
         .then(({ status_code, message, data: { status } }) => {
-          if (status_code === 200) {
-            this.$message.success(message)
-          } else {
-            this.$message.error(message)
-          }
+          this.$message.success(message)
         })
         .catch(({ message }) => {
           this.$message.error(message)
@@ -181,23 +168,16 @@ export default {
       let r1 = getRbacMenuPermissions({ menu_id: record.id })
       await Promise.all([r, r1])
         .then(([{ status_code, message, data }, { status_code: status_code_1, message: message1, data: data1 }]) => {
-          if (status_code === 200) {
-            let arr = data.map(({ id: key, name: title }) => {
-              return { key: '' + key, title }
-            })
-            this.allTreeDataSource = arr
-          } else {
-            this.$message.error(message)
-          }
-          if (status_code_1 === 200) {
-            let arr1 = data1.map(({ id }) => {
-              return '' + id
-            })
+          let arr = data.map(({ id: key, name: title }) => {
+            return { key: '' + key, title }
+          })
+          this.allTreeDataSource = arr
 
-            this.targetKeys = arr1
-          } else {
-            this.$message.error(message_1)
-          }
+          let arr1 = data1.map(({ id }) => {
+            return '' + id
+          })
+
+          this.targetKeys = arr1
         })
         .catch(({ message }) => {
           this.$message.error(message)
@@ -216,13 +196,9 @@ export default {
         ids: this.targetKeys
       })
         .then(({ status_code, message }) => {
-          if (status_code === 200) {
-            this.$message.success(message)
-            this.showModal = false
-            r = true
-          } else {
-            this.$message.error(message)
-          }
+          this.$message.success(message)
+          this.showModal = false
+          r = true
         })
         .catch(({ message }) => {
           this.$message.error(message)

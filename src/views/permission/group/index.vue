@@ -162,13 +162,9 @@ export default {
             onOk: async () => {
               await rbacGroupDelete({ id: this.currentInfo.id })
                 .then(({ status_code, message }) => {
-                  if (status_code === 200) {
-                    this.$message.success(message)
-                    this.getInfoList()
-                    this.currentInfo = {}
-                  } else {
-                    this.$message.error(message)
-                  }
+                  this.$message.success(message)
+                  this.getInfoList()
+                  this.currentInfo = {}
                 })
                 .catch(({ message }) => {
                   this.$message.error(message)
@@ -323,15 +319,11 @@ export default {
           data: [...temp.values()]
         })
           .then(({ status_code, message }) => {
-            if (status_code === 200) {
-              r = true
-              this.$message.success(message)
-              this.showModal = false
-              this.isConfig = false
-              this.currentInfo = {}
-            } else {
-              this.$message.error(message)
-            }
+            r = true
+            this.$message.success(message)
+            this.showModal = false
+            this.isConfig = false
+            this.currentInfo = {}
           })
           .catch(({ message }) => {
             this.$message.error(message)
@@ -342,14 +334,9 @@ export default {
           : rbacGroupUpdate({ ...this.currentInfo, ...values })
         )
           .then(({ status_code, message }) => {
-            if (status_code === 200) {
-              r = true
-              this.$message.success(message)
-              this.showModal = false
-              this.currentInfo = {}
-            } else {
-              this.$message.error(message)
-            }
+            r = true
+            this.$message.success(message)
+            this.showModal = false
           })
           .catch(({ message }) => {
             this.$message.error(message)

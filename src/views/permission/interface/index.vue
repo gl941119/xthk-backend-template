@@ -116,12 +116,7 @@ export default {
       record.is_white = origin ? 0 : 1
       await rbacPermissionsWhite({ id: record.id })
         .then(({ status_code, message, data: { status } }) => {
-          if (status_code === 200) {
-            this.$message.success(message)
-          } else {
-            this.$message.error(message)
-            record.is_white = origin
-          }
+          this.$message.success(message)
         })
         .catch(({ message }) => {
           this.$message.error(message)
