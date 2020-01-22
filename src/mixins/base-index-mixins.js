@@ -78,7 +78,9 @@ export default {
         per_page: perPage,
         /**当前页码 */
         page: 1
-      }
+      },
+      /**默认的模式窗口属性 */
+      defaultModalProps: {}
     }
   },
   created() {
@@ -279,16 +281,20 @@ export default {
     }
 
     /**默认模式窗口属性 */
-    const modalProps = {
-      class: 'my-modal',
-      visible: this.showModal,
-      afterClose: this.handlerModalClose,
-      maskClosable: false,
-      destroyOnClose: true,
-      confirmLoading: this.confirmLoading,
-      width: this.modalWidth,
-      footer: this.modalFooter
-    }
+    const modalProps = Object.assign(
+      {},
+      {
+        class: 'my-modal',
+        visible: this.showModal,
+        afterClose: this.handlerModalClose,
+        maskClosable: false,
+        destroyOnClose: true,
+        confirmLoading: this.confirmLoading,
+        width: this.modalWidth,
+        footer: this.modalFooter
+      },
+      this.defaultModalProps || {}
+    )
 
     /**模式窗口title的slot */
     const modalScopedSlots = {
