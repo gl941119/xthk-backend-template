@@ -150,12 +150,21 @@ module.exports = {
       args[0].VERSION = '"' + (myConfig.version || '1.0.0') + '"'
       return args
     })
+
+    config.plugin('html').tap(args => {
+      args[0].hash = true
+      return args
+    })
   },
   configureWebpack: config => {
     if (isProduction) {
+      const version = myConfig.version || new Date().getTime()
       // 为生产环境修改配置...
       config.mode = 'production'
       return {
+        output: {
+          chunkFilename: `js/[name].[contenthash:8]-v${version}.js`
+        },
         plugins: [
           new CompressionPlugin({
             filename: '[path].gz[query]',
