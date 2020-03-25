@@ -55,6 +55,7 @@ export default {
           }
         }
       ],
+	  nameCount:0, // 名称字数
       symbolCount: 0, // 标识字数
       descCount: 0, //描述字数
       treeData: [], //当前树控件数据,
