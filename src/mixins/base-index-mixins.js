@@ -156,7 +156,9 @@ export default {
     /**查询文本框搜索事件 */
     handleSearch() {},
     /** 添加按钮事件*/
-    handleAdd() {},
+    handleAdd() {
+	   this.showModal = true
+	},
     /**模式窗口点击确认 */
     handlerModalOk() {
       if (this.confirmLoading) return
