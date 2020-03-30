@@ -161,7 +161,6 @@ export default {
   created() {
     this.selectedKeys = this.defaultSelectedKeys
     this.myCollapsed = this.collapsed
-    debugger
   },
   methods: {
     /*查找对应name的菜单项 */
@@ -186,10 +185,16 @@ export default {
      */
     handleMenuClick({ item, key, keyPath }) {
       const menu = this._findMenu(key)
+      const { name } = this.$route || { name: '' }
+      const current = this.selectedKeys[0]
       if (this.menuClick) {
         this.menuClick(menu)
       } else {
         this.$emit('menuClick', menu)
+      }
+
+      if (current === key && name !== key) {
+        this.handleMenuSelect({ item, key, keyPath })
       }
     },
     /** 菜单项选中事件 */
