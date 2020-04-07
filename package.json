@@ -15,7 +15,7 @@
         "@sentry/integrations": "^5.11.0",
         "add": "^2.0.6",
         "ali-oss": "^6.4.0",
-        "ant-design-vue": "^1.4.10",
+        "ant-design-vue": "^1.5.1",
         "axios": "^0.19.1",
         "babel-plugin-import": "^1.13.0",
         "babel-plugin-syntax-jsx": "^6.18.0",

@@ -16,13 +16,20 @@ export default {
       addButtonText: '扫描',
       searchPlaceholder: '请输入接口名称或地址',
       columns: [
-        { title: '序号', dataIndex: 'num', width: 160 },
+        {
+          title: '序号',
+          dataIndex: 'num',
+          width: 140,
+          customRender: (text, record) => {
+            return Reflect.has(record, 'num') ? record.num : record.id
+          }
+        },
         { title: '接口名称', dataIndex: 'name' },
         { title: '接口地址', dataIndex: 'permission' },
         {
           title: '启用状态',
           dataIndex: 'status',
-          width: 200,
+          width: 160,
           customRender: (text, record, dataIndex) => {
             return (
               <a-switch
@@ -37,7 +44,7 @@ export default {
         {
           title: '加入白名单',
           dataIndex: 'is_white',
-          width: 200,
+          width: 160,
           customRender: (text, record, dataIndex) => {
             return (
               <a-switch

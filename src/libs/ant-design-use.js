@@ -38,7 +38,9 @@ import {
   Cascader,
   List,
   Affix,
-  Transfer
+  Transfer,
+  ConfigProvider,
+  Result
 } from 'ant-design-vue'
 
 Vue.use(Dropdown)
@@ -79,6 +81,8 @@ Vue.use(Radio)
 Vue.use(Cascader)
 Vue.use(List)
 Vue.use(Transfer)
+Vue.use(ConfigProvider)
+Vue.use(Result)
 Vue.component(Affix.name, Affix)
 
 Vue.prototype.$message = message

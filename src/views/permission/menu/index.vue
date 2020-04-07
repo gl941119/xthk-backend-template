@@ -23,7 +23,14 @@ export default {
       searchPlaceholder: '请输入菜单展示名称',
       modalWidth: 800,
       columns: [
-        { title: '序号', dataIndex: 'num' },
+        {
+          title: '序号',
+          dataIndex: 'num',
+          width: 140,
+          customRender: (text, record) => {
+            return Reflect.has(record, 'num') ? record.num : record.id
+          }
+        },
         { title: '菜单英文名 ', dataIndex: 'name' },
         { title: '菜单展示名称', dataIndex: 'meta_title' },
         { title: '菜单层级', dataIndex: 'level_name' },

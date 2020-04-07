@@ -157,8 +157,8 @@ export default {
     handleSearch() {},
     /** 添加按钮事件*/
     handleAdd() {
-	   this.showModal = true
-	},
+      this.showModal = true
+    },
     /**模式窗口点击确认 */
     handlerModalOk() {
       if (this.confirmLoading) return
@@ -246,7 +246,7 @@ export default {
               placeholder={this.searchPlaceholder}
               defaultValue={this.searchInputDefaultValue}
               on-search={this.handleSearch}
-            ></a-input-search>
+            />
           </div>
         )
       }
@@ -321,7 +321,7 @@ export default {
               {this.showAddButton && (
                 <a-col span={2}>
                   <a-button type="primary" loading={this.addButtonLoading} on-click={this.handleAdd}>
-                    {this.showAddButtonIcon && <a-icon type={this.addButtonIconType}></a-icon>}
+                    {this.showAddButtonIcon && <a-icon type={this.addButtonIconType} />}
                     <span>{this.addButtonText}</span>
                   </a-button>
                 </a-col>
@@ -345,7 +345,7 @@ export default {
                 this.$slots.infoList.hasOwnProperty('render') &&
                 h(this.$slots.infoList))
             ) : (
-              <InfoList {...{ props: infoListProps }}></InfoList>
+              <InfoList {...{ props: infoListProps }} />
             ))}
         </div>
         {this.showModal && (

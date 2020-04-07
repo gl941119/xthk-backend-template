@@ -89,6 +89,11 @@ export const routes = [
     component: () => import(/* webpackChunkName: "login" */ '../views/error/noapp')
   },
   {
+    path: '*',
+    name: '404',
+    component: () => import(/* webpackChunkName: "login" */ '../views/error/404')
+  },
+  {
     path: '/demo',
     name: 'demo',
     meta: {
@@ -112,33 +117,23 @@ const getUserPermissions = function() {
       .children.forEach(m => {
         arr.push(m.name)
         if (m.children) {
-          Array.prototype.push.apply(
-            arr,
-            m.children.map(n => n.name)
-          )
+          Array.prototype.push.apply(arr, m.children.map(n => n.name))
         }
       })
   }
   return getAuthUserMenusList()
-    .then(
-      ({
-        data: { menus, permissions } = {
-          menus: [],
-          permissions: []
-        }
-      }) => {
-        process.env.NODE_ENV === 'development' && (menus = arr)
-        Store.commit('setOwnAuth', {
-          menus,
-          permissions
-        })
-        console.log('process.env.NODE_ENV', process.env.NODE_ENV, menus)
-        return {
-          menus,
-          permissions
-        }
+    .then(({ data: { menus, permissions } = { menus: [], permissions: [] } }) => {
+      process.env.NODE_ENV === 'development' && (menus = arr)
+      Store.commit('setOwnAuth', {
+        menus,
+        permissions
+      })
+      console.log('process.env.NODE_ENV', process.env.NODE_ENV, menus)
+      return {
+        menus,
+        permissions
       }
-    )
+    })
     .catch(({ message }) => {
       Vue.prototype.$message.error(message)
       router.replace({
@@ -181,8 +176,6 @@ router.beforeEach(async (to, from, next) => {
     if (!ownAuth) {
       ownAuth = await getUserPermissions()
     }
-    console.log('ownAuth', ownAuth)
-
     if (!ownAuth) {
       next(false)
       router.replace({

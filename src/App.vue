@@ -1,17 +1,17 @@
 <template>
-  <a-locale-provider :locale='locale'>
-    <div id='app'>
+  <a-config-provider :locale="locale">
+    <div id="app">
       <router-view />
     </div>
-  </a-locale-provider>
+  </a-config-provider>
 </template>
 
 <script>
 import zhCN from 'ant-design-vue/lib/locale-provider/zh_CN'
-
 import moment from 'moment'
 import 'moment/locale/zh-cn'
 moment.locale('zh-cn') // 设置日期本地化
+
 export default {
   data() {
     return {

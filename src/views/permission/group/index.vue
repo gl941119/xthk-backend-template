@@ -15,7 +15,14 @@ export default {
       modalTitle: '配置权限',
       searchPlaceholder: '请输入权限组名称',
       columns: [
-        { title: '序号', dataIndex: 'num' },
+        {
+          title: '序号',
+          dataIndex: 'num',
+          width: 140,
+          customRender: (text, record) => {
+            return Reflect.has(record, 'num') ? record.num : record.id
+          }
+        },
         { title: '权限组名称', dataIndex: 'name' },
         { title: '唯一标识', dataIndex: 'symbol' },
         { title: '描述', dataIndex: 'desc' },
@@ -55,7 +62,7 @@ export default {
           }
         }
       ],
-	  nameCount:0, // 名称字数
+      nameCount: 0, // 名称字数
       symbolCount: 0, // 标识字数
       descCount: 0, //描述字数
       treeData: [], //当前树控件数据,

@@ -124,7 +124,6 @@ export default {
       this.selectedMenuKeys = [item.name]
       this.defaultTabKey = item.name
       this.$router.push({ name: item.name })
-      console.log('handleTabSelect', 'router')
     },
     /**tab项被移出 */
     handleTabRemove(item) {
@@ -143,7 +142,6 @@ export default {
         this.defaultTabKey = name
       }
       this.$router.push({ name })
-      console.log('handleMenuSelect', 'router')
     }
   }
 }

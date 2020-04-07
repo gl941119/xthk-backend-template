@@ -102,20 +102,14 @@ export default {
       if (this.tabSelect) {
         this.tabClick(this.menus.find(m => m.key === activeKey))
       } else {
-        this.$emit(
-          'tabSelect',
-          this.menus.find(m => m.key === activeKey)
-        )
+        this.$emit('tabSelect', this.menus.find(m => m.key === activeKey))
       }
     },
     handleTabClick(activeKey) {
       if (this.tabClick) {
         this.tabClick(this.menus.find(m => m.key === activeKey))
       } else {
-        this.$emit(
-          'tabClick',
-          this.menus.find(m => m.key === activeKey)
-        )
+        this.$emit('tabClick', this.menus.find(m => m.key === activeKey))
       }
     },
     handelEdit(targetKey, action) {
@@ -182,6 +176,7 @@ export default {
     border: 1px solid #e8e8e8 !important;
     line-height: 1.5 !important;
     border-radius: 0 !important;
+    height: auto !important;
   }
   .ant-tabs-bar {
     margin-bottom: 0;
@@ -191,6 +186,7 @@ export default {
     transform: translateY(-1px);
   }
   .ant-tabs-card-bar .ant-tabs-tab-active {
+    height: auto !important;
     background: #1890ff !important;
     color: #fff !important;
     .ant-tabs-close-x {
