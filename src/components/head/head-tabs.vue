@@ -91,11 +91,42 @@ export default {
       if (c !== o) {
         this.menus = c || []
       }
+    },
+    $route(c, o) {
+      // 移出tab时，需要从keepAlive 里，移出对应的页面缓存
+      if (this._is_remove_tab_ && o.meta && o.meta.keepAlive) {
+        const len = o.matched.length
+        let m = o.matched[len - 1]
+        if (m && (m = m.instances) && (m = m.default)) {
+          if (!m.$vnode.parent && m.$parent.$options.name === 'BlankLayout') {
+            m = m.$parent
+          }
+          let $v = m.$vnode
+          // 当前vnode存在父级对象，且父级对象拥有cache
+          if ($v.parent && $v.parent.componentInstance && $v.parent.componentInstance.cache) {
+            const cOptions = $v.componentOptions
+            const cache = $v.parent.componentInstance.cache || {}
+            const keys = $v.parent.componentInstance.keys || []
+            let key =
+              $v.componentOptions.Ctor.cid + ($v.componentOptions.tag ? `::${this.$vnode.componentOptions.tag}` : '')
+            $v.key && (key = $v.key)
+            keys.find((m, index) => {
+              if (m === key) {
+                keys.splice(index, 1)
+                return true
+              }
+            })
+            cache[key] && Reflect.deleteProperty(cache, key)
+          }
+        }
+      }
+      this._is_remove_tab_ = false
     }
   },
   created() {
     this.menus = this.items || []
     this.activeKey = this.defaultKey
+    this._is_remove_tab_ = false
   },
   methods: {
     handleChange(activeKey) {
@@ -138,6 +169,7 @@ export default {
       this.menus = this.menus.filter(m => m.key !== targetKey)
       this.activeKey = tempActiveKey
       this.handleChange(this.activeKey)
+      this._is_remove_tab_ = true
       this.$emit('update:items', this.menus)
       if (this.tabRemove) {
         this.tabRemove(removeItem)

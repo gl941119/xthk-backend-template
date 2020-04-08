@@ -31,7 +31,8 @@ const whiteList = ['noapp', 'login']
             meta:{
                 title:""
             }
-          }
+          },
+          keepAlive:undefined // 是否保存当前页面状态.默认未定义
       },
       children: [],
       component:            
@@ -203,7 +204,7 @@ router.beforeEach(async (to, from, next) => {
   next()
 })
 
-router.afterEach(() => {
+router.afterEach((to, from) => {
   NProgress.done()
 })
 export default router

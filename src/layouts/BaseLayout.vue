@@ -17,9 +17,10 @@
         @tabRemove="handleTabRemove"
       ></head-tabs>
       <div class="info-content">
-        <keep-alive :include="keepAliveInfos.value">
-          <router-view></router-view>
+        <keep-alive>
+          <router-view v-if="this.$route.meta && this.$route.meta.keepAlive"></router-view>
         </keep-alive>
+        <router-view v-if="!this.$route.meta || !this.$route.meta.keepAlive"></router-view>
       </div>
     </a-layout-content>
   </a-layout>
@@ -62,6 +63,7 @@ export default {
     const data = await this.generateMenus()
     this.menus = data
     this._initInfo()
+    console.log(this.menus)
   },
   mounted() {},
   methods: {
@@ -123,7 +125,7 @@ export default {
     handleTabSelect(item) {
       this.selectedMenuKeys = [item.name]
       this.defaultTabKey = item.name
-      this.$router.push({ name: item.name })
+      this.$route.name !== item.name && this.$router.push({ name: item.name })
     },
     /**tab项被移出 */
     handleTabRemove(item) {

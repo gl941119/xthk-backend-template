@@ -9,6 +9,7 @@ import {
   getRbacGroupMenuPermissions
 } from '_axios/permission'
 export default {
+  name: 'PermissionGroup',
   mixins: [baseIndexMixins],
   data() {
     return {

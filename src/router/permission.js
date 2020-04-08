@@ -23,7 +23,8 @@ const permission = [
         meta: {
           title: '菜单配置',
           icon: 'menu-fold',
-          preRoute: undefined
+          preRoute: undefined,
+          keepAlive: false
         },
         component: () => import(/* webpackChunkName: "permission" */ '../views/permission/menu')
       },
@@ -34,7 +35,8 @@ const permission = [
           title: '权限组设置',
           icon: 'project',
           showMenu: true,
-          preRoute: undefined
+          preRoute: undefined,
+          keepAlive: false
         },
         component: () => import(/* webpackChunkName: "permission" */ '../views/permission/group')
       }
