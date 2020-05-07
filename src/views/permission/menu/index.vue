@@ -111,6 +111,18 @@ export default {
         }
       }
     },
+    __filter_route__(routers) {
+      return routers.filter(m => {
+        if (!m.meta || m.meta.showMenu !== false) {
+          if (m.children) {
+            m.children = this.__filter_route__(m.children)
+          }
+          return true
+        } else {
+          return false
+        }
+      })
+    },
     /**添加按钮事件。*/
     handleAdd() {
       this.$confirm({
@@ -123,8 +135,9 @@ export default {
         ),
         onOk: async () => {
           this.addButtonLoading = true
-          let param = { data: [...routers] }
-          await rbacMenuImport(param)
+          const data = this.__filter_route__([...routers])
+
+          await rbacMenuImport({ data })
             .then(({ status_code, message }) => {
               this.$message.success(message)
               this.getInfoList(1)
