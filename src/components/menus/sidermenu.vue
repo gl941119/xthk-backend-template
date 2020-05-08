@@ -216,7 +216,7 @@ export default {
   &.my-collapsed {
     .avatar {
       height: 80px;
-      margin-top: 10px;
+      margin-top: 0;
     }
     .name {
       display: none;
@@ -275,7 +275,7 @@ export default {
     flex: 0 auto;
     width: 100%;
     height: 140px;
-    padding: 24px 0 0;
+    padding: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
