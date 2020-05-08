@@ -12,8 +12,25 @@ export default new Vuex.Store({
     user,
     permission
   },
-  state: {},
-  getters: {},
-  mutations: {},
+  state: {
+    /** 显示用户头像 */
+    showAvatar: false,
+    /** 是否允许收缩菜单栏 */
+    allowCollapsed: true
+  },
+  getters: {
+    showAvatar: state => state.showAvatar,
+    allowCollapsed: state => state.allowCollapsed
+  },
+  mutations: {
+    /** 显示用户头像 */
+    showAvatar(state, value) {
+      state.showAvatar = value
+    },
+    /** 是否允许收缩菜单栏 */
+    allowCollapsed(state, value) {
+      state.allowCollapsed = value
+    }
+  },
   actions: {}
 })

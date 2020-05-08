@@ -5,18 +5,17 @@
     :class="collapsedClass"
     :width="width"
     :theme="theme"
-    :collapsible="collapsible"
     :collapsedWidth="40"
     :trigger="null"
   >
     <div class="side-inner">
-      <div class="avatar">
+      <div v-if="showAvatar !== false" class="avatar">
         <a-avatar v-if="!user.avatar" :size="!myCollapsed ? 64 : 32" icon="user" />
         <a-avatar v-else :size="!myCollapsed ? 64 : 32" :src="user.avatar"></a-avatar>
         <div class="name">{{ user.real_name }}</div>
       </div>
       <a-icon
-        v-if="collapsible"
+        v-if="allowCollapsed"
         :title="collapsibleTitle"
         class="trigger"
         :type="triggerType"
@@ -72,6 +71,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 export default {
   name: 'SiderMenu',
   props: {
@@ -83,11 +83,6 @@ export default {
     theme: {
       type: String,
       default: 'light'
-    },
-    collapsible: {
-      type: Boolean,
-      required: false,
-      default: false
     },
     collapsed: {
       type: Boolean,
@@ -125,6 +120,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters(['showAvatar', 'allowCollapsed']),
     user() {
       return this.$store.getters.getUser || {}
     },
@@ -262,7 +258,7 @@ export default {
     transition: color 0.3s;
     position: absolute;
     top: $base-space-size;
-    right: $base-space-size;
+    right: -24px;
   }
 
   &::after {
@@ -296,6 +292,9 @@ export default {
       overflow: hidden;
       text-overflow: ellipsis;
     }
+  }
+  .no-avatar {
+    height: 20px;
   }
   .menu-wrap {
     flex: 1%;

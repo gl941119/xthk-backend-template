@@ -62,4 +62,9 @@ export default {
     }
   }
 }
+.query-form {
+  .ant-form-item {
+    margin-bottom: 12px;
+  }
+}
 </style>

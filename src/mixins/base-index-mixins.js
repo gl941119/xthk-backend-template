@@ -7,6 +7,7 @@ export default {
   name: 'baseIndexView',
   data() {
     return {
+      __isExpand__: false,
       /**显示面包宵 */
       showBreadCrumb: true,
       /**添加按钮默认文本 */
@@ -80,7 +81,9 @@ export default {
         page: 1
       },
       /**默认的模式窗口属性 */
-      defaultModalProps: {}
+      defaultModalProps: {},
+      /**查询表单区域Col栅格占位格数*/
+      queryFormColSpan: 6
     }
   },
   created() {
@@ -224,16 +227,108 @@ export default {
     handleSorter({ order, columnKey, field }) {
       console.log(order, columnKey, field)
     },
-    /** 默认搜索框的slot渲染 */
+    __handeleExpand() {
+      this.__isExpand__ = !this.__isExpand__
+      this.$forceUpdate()
+    },
+    /** 重置查询表单 （可按需 override） */
+    handleFormReset() {
+      // 重置所有表单
+      this.form.resetFields()
+      /** 触发表单重置事件 fromreset */
+      this.$emit('formReset')
+    },
+    /** 查询按钮事件 (可按需override) */
+    handleQuery() {
+      console.log(this.form.getFieldsValue())
+      /** 触发查询事件 query */
+      this.$emit('query', this.form.getFieldsValue())
+    },
+    /** 默认搜索框的slot渲染.对应slot=extra */
     renderExtraSlot() {},
-    /** 渲染扩展按钮*/
+    /** 渲染扩展按钮。对应slot=extraButton*/
     renderExtraButtonSlot() {},
+    /**输出查询前置区域元素。（即对应的slot=beforQuery元素 */
+    renderBeforeQuerySlot() {},
     /**渲染扩展查询 */
     renderQuerySlot() {},
+    /** 
+     * 输出标准准的查询项。可返回组件数组.(该方法比renderQuerySlot方法或者slot=query的权重更高)
+     * 数组项格式如下: 
+     * <a-form-item label="续报名称/续报ID">
+          <a-input
+            placeholder="输入续报名称关键词或续报ID"           
+          ></a-input>
+        </a-form-item>
+     * */
+    renderNormalQueryItem() {},
+    /** 
+     * 输出可展开收缩的查询项。可返回组件数组.(该方法比renderQuerySlot方法或者slot=query的权重更高)
+     * 数组项格式如下: 
+     * <a-form-item label="续报名称/续报ID">
+          <a-input
+            placeholder="输入续报名称关键词或续报ID"  
+          ></a-input>
+        </a-form-item>
+     * */
+    renderExpandQueryItem() {},
     /**渲染模式窗口内容 */
     renderModalSlot() {},
-    /**渲染页面默认扩展内容 */
+    /**渲染页面默认扩展内容。对应slot=default*/
     renderDefaultSlot() {}
+  },
+  /** 生成查询条件页 */
+  __buildQuerySlot__(h) {
+    // 判定生成查询条件空
+    let queryItems = null
+    let normal = this.renderNormalQueryItem()
+    let expand = this.renderExpandQueryItem()
+    // debugger
+    if (normal || expand) {
+      normal = normal || []
+      expand = expand || []
+      normal && !Array.isArray(normal) && (normal = [normal])
+      expand && !Array.isArray(expand) && (expand = [expand])
+      const colSpan = this.queryFormColSpan
+      let arr = normal.map(m => {
+        return <a-col span={colSpan}>{m}</a-col>
+      })
+
+      expand.map(m => {
+        arr.push(<a-col span={!this.__isExpand__ ? 0 : colSpan}>{m}</a-col>)
+      })
+
+      if (arr.length) {
+        queryItems = (
+          <a-row gutter={16} type="flex">
+            {...arr}
+            <a-col span={colSpan}>
+              <a-form-item label="　" colon={false} class="form-button-wrap">
+                <div style="white-space:nowrap">
+                  <a-button type="primary" on-click={this.handleQuery}>
+                    查询
+                  </a-button>
+                  &ensp;
+                  <a-button on-click={this.handleFormReset}>重置</a-button>
+                  &ensp;
+                  {expand.length ? (
+                    <a-button on-click={this.__handeleExpand}>{this.__isExpand__ ? '收起筛选' : '展开筛选'}</a-button>
+                  ) : null}
+                </div>
+              </a-form-item>
+            </a-col>
+          </a-row>
+        )
+      }
+    }
+    if (!queryItems) {
+      return this.$slots.query
+        ? (typeof this.$slots.query === 'function' && this.$slots.query()) ||
+            (Object.isObject(this.$slots.query) && this.$slots.query.hasOwnProperty('render') && h(this.$slots.query))
+        : this.renderQuerySlot()
+    } else {
+      return queryItems
+    }
   },
   render(h, c) {
     const scopedSlots = {
@@ -265,6 +360,7 @@ export default {
         $node && (scopedSlots.extra = () => $node)
       }
     }
+    const $query = Reflect.apply(this.$options.__buildQuerySlot__, this, [h, c])
 
     //设置列表属性
     const infoListProps = {
@@ -306,17 +402,17 @@ export default {
         return arr
       }
     }
-
     return (
       <Layout {...{ scopedSlots, props: { showBreadCrumb: this.showBreadCrumb } }}>
         <div class={'base-view ' + this.baseViewClass}>
-          <a-form>
-            {this.$slots.query
-              ? (typeof this.$slots.query === 'function' && this.$slots.query()) ||
-                (Object.isObject(this.$slots.query) &&
-                  this.$slots.query.hasOwnProperty('render') &&
-                  h(this.$slots.query))
-              : this.renderQuerySlot()}
+          {this.$slots.beforeQuery
+            ? (typeof this.$slots.beforeQuery === 'function' && this.$slots.beforeQuery()) ||
+              (Object.isObject(this.$slots.beforeQuery) &&
+                this.$slots.extraButton.hasOwnProperty('render') &&
+                h(this.$slots.beforeQuery))
+            : this.renderBeforeQuerySlot()}
+          <a-form class="query-form" form={this.form}>
+            {$query}
             <a-row gutter={32} type="flex">
               {this.showAddButton && (
                 <a-col span={2}>

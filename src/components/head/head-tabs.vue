@@ -1,26 +1,29 @@
 <template>
-  <a-tabs
-    v-model="activeKey"
-    :hideAdd="hideAdd"
-    :class="headTabClass"
-    :tabBarGutter="tabBarGutter"
-    type="editable-card"
-    @change="handleChange"
-    @tabClick="handleTabClick"
-    @edit="handelEdit"
-  >
-    <a-tab-pane v-for="item in menus" :key="item.key" :closable="closable && menus.length > 1">
-      <template v-slot:tab>
-        <div class="tab-inner">
-          <div class="dot"></div>
-          <span>{{ item.title }}</span>
-        </div>
-      </template>
-    </a-tab-pane>
-  </a-tabs>
+  <div :class="myClass">
+    <a-tabs
+      v-model="activeKey"
+      :hideAdd="hideAdd"
+      :class="headTabClass"
+      :tabBarGutter="tabBarGutter"
+      type="editable-card"
+      @change="handleChange"
+      @tabClick="handleTabClick"
+      @edit="handelEdit"
+    >
+      <a-tab-pane v-for="item in menus" :key="item.key" :closable="closable && menus.length > 1">
+        <template v-slot:tab>
+          <div class="tab-inner">
+            <div class="dot"></div>
+            <span>{{ item.title }}</span>
+          </div>
+        </template>
+      </a-tab-pane>
+    </a-tabs>
+  </div>
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 export default {
   name: 'HeadTabs',
   props: {
@@ -73,12 +76,18 @@ export default {
     }
   },
   computed: {
+    ...mapGetters(['showAvatar', 'allowCollapsed']),
     headTabClass() {
       return { 'head-tabs': true }
     },
     //是否允许关闭当前tabPane
     allowClosableTab() {
       return this.closable && this.menus.length > 1
+    },
+    myClass() {
+      return {
+        collapsed: this.allowCollapsed
+      }
     }
   },
   watch: {
@@ -182,13 +191,17 @@ export default {
 </script>
 
 <style lang="scss">
-.head-tabs {
-  flex: 0 0 auto;
-
+.collapsed {
+  padding-left: 24px;
   background-color: #fff;
   margin-bottom: 0;
 
   box-shadow: 0 1px 6px rgba($color: #000000, $alpha: 0.1);
+  border-bottom: 1px solid #e8e8e8;
+}
+.head-tabs {
+  flex: 0 0 auto;
+  margin-bottom: 0;
 
   .ant-tabs-nav-wrap {
     line-height: 40px;
@@ -212,6 +225,7 @@ export default {
   }
   .ant-tabs-bar {
     margin-bottom: 0;
+    border-bottom: 0 none;
   }
 
   .ant-tabs-close-x {
