@@ -50,7 +50,7 @@ export default {
       const myMenus = data || state.getters.getMenus
       return new Promise(resolve => {
         const info = routes.find(m => m.path === '/')
-        const children = JSON.parse(JSON.stringify((info && info.children) || []))
+        const children = JSON.parse(JSON.stringify((info && info.children) || [])).filter(m => myMenus.includes(m.name))
         filterNotShowMenu(children, myMenus || [])
         state.commit('setMenus', children || [])
         resolve(children)

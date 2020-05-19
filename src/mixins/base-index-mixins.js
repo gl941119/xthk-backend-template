@@ -402,71 +402,73 @@ export default {
         return arr
       }
     }
-    return (
-      <Layout {...{ scopedSlots, props: { showBreadCrumb: this.showBreadCrumb } }}>
-        <div class={'base-view ' + this.baseViewClass}>
-          {this.$slots.beforeQuery
-            ? (typeof this.$slots.beforeQuery === 'function' && this.$slots.beforeQuery()) ||
-              (Object.isObject(this.$slots.beforeQuery) &&
-                this.$slots.extraButton.hasOwnProperty('render') &&
-                h(this.$slots.beforeQuery))
-            : this.renderBeforeQuerySlot()}
-          <a-form class="query-form" form={this.form}>
-            {$query}
-            <a-row gutter={32} type="flex">
-              {this.showAddButton && (
-                <a-col span={2}>
-                  <a-button type="primary" loading={this.addButtonLoading} on-click={this.handleAdd}>
-                    {this.showAddButtonIcon && <a-icon type={this.addButtonIconType} />}
-                    <span>{this.addButtonText}</span>
-                  </a-button>
-                </a-col>
-              )}
-              <a-col span={22}>
-                {//操作按钮slot= slot=extraButton
-                this.$slots.extraButton
-                  ? (typeof this.$slots.extraButton === 'function' && this.$slots.extraButton()) ||
-                    (Object.isObject(this.$slots.extraButton) &&
-                      this.$slots.extraButton.hasOwnProperty('render') &&
-                      h(this.$slots.extraButton))
-                  : this.renderExtraButtonSlot()}
+
+    const baseView = (
+      <div class={'base-view ' + this.baseViewClass}>
+        {this.$slots.beforeQuery
+          ? (typeof this.$slots.beforeQuery === 'function' && this.$slots.beforeQuery()) ||
+            (Object.isObject(this.$slots.beforeQuery) &&
+              this.$slots.extraButton.hasOwnProperty('render') &&
+              h(this.$slots.beforeQuery))
+          : this.renderBeforeQuerySlot()}
+        <a-form class="query-form" form={this.form}>
+          {$query}
+          <a-row gutter={32} type="flex">
+            {this.showAddButton && (
+              <a-col span={2}>
+                <a-button type="primary" loading={this.addButtonLoading} on-click={this.handleAdd}>
+                  {this.showAddButtonIcon && <a-icon type={this.addButtonIconType} />}
+                  <span>{this.addButtonText}</span>
+                </a-button>
               </a-col>
-            </a-row>
-          </a-form>
-          {// 列表slot=infoList
-          this.showInfoList &&
-            (this.$slots.infoList ? (
-              (typeof this.$slots.infoList === 'function' && this.$slots.infoList()) ||
-              (Object.isObject(this.$slots.infoList) &&
-                this.$slots.infoList.hasOwnProperty('render') &&
-                h(this.$slots.infoList))
-            ) : (
-              <InfoList {...{ props: infoListProps }} />
-            ))}
-        </div>
-        {this.showModal && (
-          <a-modal
-            {...{ props: modalProps, scopedSlots: modalScopedSlots }}
-            on-cancel={this.handlerModalCancel}
-            on-ok={this.handlerModalOk}
-          >
-            {//模式窗口内容slot=modal
-            this.$slots.modal
-              ? (typeof this.$slots.modal === 'function' && this.$slots.modal()) ||
-                (Object.isObject(this.$slots.modal) &&
-                  this.$slots.modal.hasOwnProperty('render') &&
-                  h(this.$slots.modal))
-              : this.renderModalSlot()}
-          </a-modal>
-        )}
-        {//页面默认slot
-        this.$slots.default
-          ? (typeof this.$slots.default === 'function' && this.$slots.default()) ||
-            (Object.isObject(this.$slots.default) &&
-              this.$slots.default.hasOwnProperty('render') &&
-              h(this.$slots.default))
-          : this.renderDefaultSlot()}
-      </Layout>
+            )}
+            <a-col span={22}>
+              {//操作按钮slot= slot=extraButton
+              this.$slots.extraButton
+                ? (typeof this.$slots.extraButton === 'function' && this.$slots.extraButton()) ||
+                  (Object.isObject(this.$slots.extraButton) &&
+                    this.$slots.extraButton.hasOwnProperty('render') &&
+                    h(this.$slots.extraButton))
+                : this.renderExtraButtonSlot()}
+            </a-col>
+          </a-row>
+        </a-form>
+        {// 列表slot=infoList
+        this.showInfoList &&
+          (this.$slots.infoList ? (
+            (typeof this.$slots.infoList === 'function' && this.$slots.infoList()) ||
+            (Object.isObject(this.$slots.infoList) &&
+              this.$slots.infoList.hasOwnProperty('render') &&
+              h(this.$slots.infoList))
+          ) : (
+            <InfoList {...{ props: infoListProps }} />
+          ))}
+      </div>
     )
+    const modalVnode = (
+      <a-modal
+        ref="myBaseModal"
+        {...{ props: modalProps, scopedSlots: modalScopedSlots }}
+        on-cancel={this.handlerModalCancel}
+        on-ok={this.handlerModalOk}
+        on-input={v => (this.showModal = v)}
+      >
+        {//模式窗口内容slot=modal
+        this.$slots.modal
+          ? (typeof this.$slots.modal === 'function' && this.$slots.modal()) ||
+            (Object.isObject(this.$slots.modal) && this.$slots.modal.hasOwnProperty('render') && h(this.$slots.modal))
+          : this.renderModalSlot()}
+      </a-modal>
+    )
+    const defaultVnode = this.$slots.default
+      ? (typeof this.$slots.default === 'function' && this.$slots.default()) ||
+        (Object.isObject(this.$slots.default) && this.$slots.default.hasOwnProperty('render') && h(this.$slots.default))
+      : this.renderDefaultSlot()
+
+    scopedSlots.default = props => {
+      return [baseView, modalVnode, defaultVnode]
+    }
+
+    return <Layout {...{ scopedSlots, props: { showBreadCrumb: this.showBreadCrumb } }} />
   }
 }
