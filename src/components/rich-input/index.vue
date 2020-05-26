@@ -1,18 +1,18 @@
 <template>
-  <div :placeholder='placeholder' :class='{"empty": !curLength, disabled: disabled}' class='rich-input-box'>
+  <div :placeholder="placeholder" :class="{"empty": !curLength, disabled: disabled}" class="rich-input-box">
     <div
-      ref='input'
-      :class='customClass'
-      :contenteditable='!readOnly'
-      class='rich-input'
+      ref="input"
+      :class="customClass"
+      :contenteditable="!readOnly"
+      class="rich-input"
       @dragenter.prevent.stop
       @drop.prevent.stop
-      @input='handleInput'
-      @keyup='handleInput'
-      @paste.prevent.stop='handlePaste'
-      @focus='deleteRange'
-      @keydown.enter='enterDown'
-      @blur='saveRange'
+      @input="handleInput"
+      @keyup="handleInput"
+      @paste.prevent.stop="handlePaste"
+      @focus="deleteRange"
+      @keydown.enter="enterDown"
+      @blur="saveRange"
     ></div>
   </div>
 </template>
@@ -117,7 +117,7 @@ export default {
     },
     saveRange() {
       //if (!this.range) {
-      console.log('saveRange', this.getSelectionAndRange().range)
+      // console.log('saveRange', this.getSelectionAndRange().range)
       this.range = this.getSelectionAndRange().range
       //}
     },
