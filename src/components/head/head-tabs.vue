@@ -233,6 +233,7 @@ export default {
   }
   .ant-tabs-card-bar .ant-tabs-tab-active {
     height: auto !important;
+    border-color: #1890ff !important;
     background: #1890ff !important;
     color: #fff !important;
     .ant-tabs-close-x {

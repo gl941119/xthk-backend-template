@@ -102,33 +102,34 @@ export default {
           } else {
             let set = new Set()
             let _map = this._cacheMap
-            let mapArr = function(arr, parents) {
+            let mapArr = function (arr, parents) {
               if (!arr || !arr.length) {
                 return undefined
               }
               let p = parents || []
-              return arr.map(({ id: key, name: title, children = null, is_active = null, parent_id }, idx) => {
+              return arr.map((item, idx) => {
+                let { id: key, name: title, children = null, is_active = null, parent_id } = item
                 let k = '' + key
                 let isKen = k.startsWith('m_')
                 let p1 = [...p]
                 if (isKen) {
                   p1.push(k)
                 }
-
                 let newChildren = children && children.length ? mapArr(children, p1) : null
                 let o = {
                   key,
                   title,
                   children: newChildren,
-                  parents: !isKen ? p1 : null
+                  parents: !isKen ? p1 : null,
+                }
+                if (Number.isInteger(key)) {
+                  key = [...p1, key].join('.')
+                  o.key = key
+                  _map.set(key, o)
                 }
                 if (is_active === 1) {
                   set.add(key)
                 }
-                if (Number.isInteger(key)) {
-                  _map.set(key, o)
-                }
-
                 return o
               })
             }
@@ -142,7 +143,7 @@ export default {
         })
     },
     //**搜索框事件 */
-    handleSearch: debounce(function(value) {
+    handleSearch: debounce(function (value) {
       this.query.name = value
       this.getInfoList(1)
     }),
@@ -205,7 +206,7 @@ export default {
         </div>
       )
       if (!this.isConfig) {
-        let nameInput = <a-input maxlength="12" placeholder="权限组名称" />
+        let nameInput = <a-input maxLength={12} placeholder="权限组名称" />
         nameInput.data.directives = [
           {
             name: 'decorator',
@@ -223,7 +224,7 @@ export default {
             ]
           }
         ]
-        let symbolInput = <a-input maxlength="20" placeholder="唯一标识" />
+        let symbolInput = <a-input maxLength={20} placeholder="唯一标识" />
         symbolInput.data.directives = [
           {
             name: 'decorator',
@@ -241,7 +242,7 @@ export default {
             ]
           }
         ]
-        let descInput = <a-input maxlength="120" type="textarea" placeholder="请输入描述" />
+        let descInput = <a-input maxLength={120} type="textarea" placeholder="请输入描述" />
         descInput.data.directives = [
           {
             name: 'decorator',
@@ -293,7 +294,8 @@ export default {
         //当前为配置操作
         let temp = new Map()
         let arr = this.checkedKeys.filter(n => {
-          let r = !('' + n).startsWith('m_')
+          const m = n.split('.').reverse()[0]
+          let r = !('' + m).startsWith('m_')
           if (r) {
             let o = this._cacheMap.get(n)
             if (o.parents) {
@@ -306,9 +308,9 @@ export default {
               o.parents.reduce((t, c, idx) => {
                 if (idx === lastIndex) {
                   if (!(c in t)) {
-                    t[c] = [n]
+                    t[c] = [m]
                   } else {
-                    t[c].push(n)
+                    t[c].push(m)
                   }
                 } else {
                   if (!(c in t)) {
@@ -322,7 +324,6 @@ export default {
           }
           return r
         })
-
         await rbacGroupUpdatePermissions({
           id: this.currentInfo.id,
           data: [...temp.values()]

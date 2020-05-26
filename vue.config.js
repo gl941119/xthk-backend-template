@@ -127,8 +127,23 @@ module.exports = {
       config.optimization.minimize(true)
       // 分割代码
       config.optimization.splitChunks({
-        chunks: 'all'
+        chunks: 'all',
+        maxInitialRequests: Infinity,
+        minSize: 300000, // 依赖包超过300000bit将被单独打包
+        cacheGroups: {
+          vendor: {
+            test: /[\\/]node_modules[\\/]/,
+            name(module) {
+              const packageName = module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/)[1]
+              return `chunk.${packageName.replace('@', '')}`
+            },
+            priority: 10
+          }
+        }
       })
+      config.optimization.runtimeChunk = {
+        name: 'manifest'
+      }
     } else {
       config.module
         .rule('eslint')
@@ -163,7 +178,7 @@ module.exports = {
       config.mode = 'production'
       return {
         output: {
-          chunkFilename: `js/[name].[contenthash:8]-v${version}.js`
+          chunkFilename: `js/[name].[contenthash]-v${version}.js`
         },
         plugins: [
           new CompressionPlugin({

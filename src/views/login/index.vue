@@ -20,7 +20,7 @@
                     ]
                   }
                 ]"
-                maxlength="11"
+                :maxLength="11"
                 placeholder="请输入账号"
                 size="large"
               >
@@ -40,7 +40,7 @@
                     ]
                   }
                 ]"
-                maxlength="16"
+                :maxLength="16"
                 placeholder="请输入密码"
                 type="password"
                 size="large"
@@ -57,8 +57,7 @@
                 size="large"
                 type="primary"
                 @click.stop="handlerLogin"
-                >登&emsp;录</a-button
-              >
+              >登&emsp;录</a-button>
               <a class="login-form-forgot" href="javascript:;" @click.stop="handlerForgotPassword">忘记密码?</a>
             </a-form-item>
           </a-form>
@@ -81,7 +80,7 @@ export default {
   beforeCreate() {
     this.form = this.$form.createForm(this)
     this._login_key = ''
-    window.addEventListener('unload', function() {}, false)
+    window.addEventListener('unload', function () { }, false)
   },
   methods: {
     /**忘记密码事件  */
