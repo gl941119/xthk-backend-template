@@ -324,6 +324,7 @@ export default {
           }
           return r
         })
+
         await rbacGroupUpdatePermissions({
           id: this.currentInfo.id,
           data: [...temp.values()]
