@@ -123,6 +123,9 @@ module.exports = {
   },
   chainWebpack: config => {
     if (isProduction) {
+
+      // config.plugin('webpack-bundle-analyzer').use(require('webpack-bundle-analyzer').BundleAnalyzerPlugin)
+
       config.plugins.delete('prefetch')
       config.plugins.delete('preload')
       // 压缩代码
@@ -180,7 +183,7 @@ module.exports = {
       config.mode = 'production'
       return {
         output: {
-          chunkFilename: `js/[name].[contenthash]-v${version}.js`
+          chunkFilename: `js/[name].[contenthash:8]-v${version}.js`
         },
         plugins: [
           // new webpack.DllReferencePlugin({
@@ -205,7 +208,8 @@ module.exports = {
           }),
           new LessThemePlugin({
             theme: './src/assets/less/index.less'
-          }) //自己lessURL
+          }), //自己lessURL
+          new webpack.ContextReplacementPlugin(/moment[\\\/]locale$/, /^\.\/(zh-cn)$/)
         ]
       }
     } else {
