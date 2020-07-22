@@ -109,18 +109,22 @@ const router = new Router({
 })
 
 /**获得用户相关的菜单或权限信息 */
-const getUserPermissions = function() {
+const getUserPermissions = function () {
   let arr = []
 
   if (process.env.NODE_ENV === 'development') {
-    routes
-      .find(m => m.path === '/')
-      .children.forEach(m => {
+    const menus = (routes.find(m => m.path === '/') || { children: [] }).children
+    const fn = (items) => {
+      items.forEach(m => {
         arr.push(m.name)
         if (m.children) {
-          Array.prototype.push.apply(arr, m.children.map(n => n.name))
+          // Array.prototype.push.apply(arr, m.children.map(n => n.name))
+          fn(m.children)
         }
       })
+
+    }
+    fn(menus)
   }
   return getAuthUserMenusList()
     .then(({ data: { menus, permissions } = { menus: [], permissions: [] } }) => {
@@ -144,7 +148,7 @@ const getUserPermissions = function() {
 }
 
 /**获得用户信息 */
-const getUserInfo = function() {
+const getUserInfo = function () {
   const user = Store.getters.getUser
   if (!user) {
     console.count('获得用户信息')
@@ -153,7 +157,7 @@ const getUserInfo = function() {
         Store.commit('setUser', data)
         return data
       })
-      .catch(() => {})
+      .catch(() => { })
   }
   return new Promise(resolve => {
     resolve(user)
@@ -172,6 +176,7 @@ router.beforeEach(async (to, from, next) => {
     next()
     return
   }
+
   if (token) {
     getUserInfo()
     if (!ownAuth) {

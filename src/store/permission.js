@@ -1,7 +1,7 @@
 import { routes } from '@/router'
 
 /** 过滤掉不呈现到菜单栏的信息*/
-const filterNotShowMenu = function(infos, myMenus) {
+const filterNotShowMenu = function (infos, myMenus) {
   if (!infos) return null
   //let { menus: currentMenus = [] } = this.ownAuth || { menus: [] }
   let currentMenus = myMenus
@@ -24,6 +24,7 @@ const filterNotShowMenu = function(infos, myMenus) {
       filterNotShowMenu(n.children, myMenus)
       n.showChildren = n.children.filter(m => {
         m.parent = n.name
+        m.parentMenu = n
         return m.hidden !== true
       })
     }

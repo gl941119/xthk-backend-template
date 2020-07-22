@@ -1,13 +1,13 @@
 <template>
   <div>
     <a-upload
-      :accept='accept'
-      :beforeUpload='onBeforeUpload'
-      :headers='header'
-      :showUploadList='showUploadList'
-      class='avatar-uploader'
-      name='img'
-      ref='sUploadz'
+      ref="sUploadz"
+      :accept="accept"
+      :beforeUpload="onBeforeUpload"
+      :headers="header"
+      :showUploadList="showUploadList"
+      class="avatar-uploader"
+      name="img"
     >
       <slot></slot>
     </a-upload>
@@ -33,7 +33,7 @@ export default {
     },
     beforeUpload: {
       type: Function,
-      default: function(file, fileList) {
+      default: function (file, fileList) {
         const isLt2M = file.size / 1024 / 1024 < this.maxSize
         if (!isLt2M) {
           this.$message.error(`上传文件不能大于${this.maxSize}M`)
@@ -43,7 +43,7 @@ export default {
     },
     change: {
       type: Function,
-      default: function(val) {}
+      default: function (val) { }
     },
     getStsToken: {
       type: [Function, null],
@@ -52,7 +52,7 @@ export default {
     /**上传成功结束后 */
     afterUpload: {
       type: Function,
-      default: () => {}
+      default: () => { }
     },
     //**上传文件最大大小。默认10M */
     maxSize: {
@@ -71,7 +71,7 @@ export default {
       file: null
     }
   },
-  created() {},
+  created() { },
   methods: {
     // ali上传
     async aliUpload() {

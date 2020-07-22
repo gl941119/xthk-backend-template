@@ -65,7 +65,7 @@ export default {
     this._initInfo()
     console.log(this.menus)
   },
-  mounted() {},
+  mounted() { },
   methods: {
     /**初始化相关数据 */
     _initInfo() {
@@ -81,7 +81,7 @@ export default {
           meta: { preRoute }
         } = this.$route
         let menu
-        //如果是三级以上的菜单路由，取所属的第二级路由
+        //如果是自定义三级以上的菜单路由，取所属的第二级路由
         if (preRoute) {
           if (Object.isObject(preRoute)) {
             name = preRoute.name
@@ -97,18 +97,32 @@ export default {
             menu = menu.showChildren[0]
           }
         } else {
-          this.menus.find(m => {
-            if (m.name === name) {
-              menu = m
-              return true
-            }
-            menu = m.showChildren.find(n => n.name === name)
-            return !!menu
-          })
+
+          const funFind = items => {
+
+            const item = items.find(m => {
+              if (m.name === name) {
+                menu = m
+                return true
+              } else if (m.showChildren) {
+                const r = funFind(m.showChildren)
+                return !!r
+              }
+              return false
+            })
+            return item
+          }
+          funFind(this.menus)
         }
+
         if (menu) {
           this.selectedMenuKeys = [menu.name]
-          menu.parent && this.openKeys.push(menu.parent)
+          let p = menu.parentMenu
+          while (p) {
+            this.openKeys.push(p.name)
+            p = p.parentMenu
+          }
+          // menu.parent && this.openKeys.push(menu.parent)
           if (this.$route.name !== menu.name && !preRoute) this.$router.push({ name: menu.name })
           this.addTab({ name: menu.name, title: menu.meta.title })
         } else {
