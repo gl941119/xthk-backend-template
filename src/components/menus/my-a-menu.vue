@@ -15,7 +15,7 @@ export default {
 
       return items.map(m => {
         const len = (m.showChildren || []).length
-        const allowSingleDisplay = len === 1 && m.meta.allowSingleDisplay !== false
+        const allowSingleDisplay = len === 1 && m.showChildren.every(n => !n.showChildren || !n.showChildren.length) && m.meta.allowSingleDisplay !== false
         const item = allowSingleDisplay ? m.showChildren[0] : m
         const optName = len > 0 && !allowSingleDisplay ? 'subMenu' : 'menu'
         const opt = {
