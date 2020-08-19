@@ -91,13 +91,18 @@ export default {
             }
           }
         }
+
         if (path === '/') {
           menu = this.menus.find(m => !m.hidden)
+          const funFirst = items => {
+            const item = items[0]
+            return item.showChildren ? funFirst(item.showChildren) : item
+          }
+
           if (menu && menu.showChildren) {
-            menu = menu.showChildren[0]
+            menu = funFirst(menu.showChildren)
           }
         } else {
-
           const funFind = items => {
 
             const item = items.find(m => {
