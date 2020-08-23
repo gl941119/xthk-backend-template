@@ -13,7 +13,8 @@ const permission = [
         path: 'interface',
         meta: {
           title: '接口列表',
-          icon: 'api'
+          icon: 'api',
+          keepAlive: true
         },
         component: () => import(/* webpackChunkName: "permission" */ '../views/permission/interface')
       },
@@ -24,7 +25,7 @@ const permission = [
           title: '菜单配置',
           icon: 'menu-fold',
           preRoute: undefined,
-          keepAlive: false
+          keepAlive: true
         },
         component: () => import(/* webpackChunkName: "permission" */ '../views/permission/menu')
       },
@@ -36,11 +37,12 @@ const permission = [
           icon: 'project',
           showMenu: true,
           preRoute: undefined,
-          keepAlive: false
+          keepAlive: true
         },
         component: () => import(/* webpackChunkName: "permission" */ '../views/permission/group')
       }
     ]
   }
 ]
+
 export default permission

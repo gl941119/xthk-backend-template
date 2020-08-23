@@ -1,4 +1,10 @@
+const prodPlugins = [['import', { libraryName: 'ant-design-vue', libraryDirectory: 'es', style: true }]]
+
+if (process.env.NODE_ENV === 'production') {
+  prodPlugins.push('transform-remove-console')
+}
+
 module.exports = {
-    presets: ['@vue/app'],
-    plugins: [['import', { libraryName: 'ant-design-vue', libraryDirectory: 'es', style: true }]]
+  plugins: prodPlugins,
+  presets: ['@vue/app']
 }
