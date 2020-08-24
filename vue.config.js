@@ -128,6 +128,11 @@ module.exports = {
 
       config.plugins.delete('prefetch')
       config.plugins.delete('preload')
+
+      config
+      .plugin('ignore')
+      .use(new webpack.ContextReplacementPlugin(/moment[/\\]locale$/, /zh-cn$/))
+
       // 压缩代码
       config.optimization.minimize(true)
       // 分割代码
@@ -149,6 +154,7 @@ module.exports = {
       config.optimization.runtimeChunk = {
         name: 'manifest'
       }
+      
     } else {
       config.module
         .rule('eslint')
