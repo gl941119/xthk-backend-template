@@ -10,6 +10,16 @@
     "dev": "vue-cli-service build --mode dev",
     "dll": "webpack -p --progress --config ./webpack.dll.config.js"
   },
+  "gitHooks": {
+    "pre-commit": "lint-staged",
+    "commit-msg": "commitlint -E GIT_PARAMS"
+  },
+  "lint-staged": {
+    "*.{js,vue}": [
+      "vue-cli-service lint",
+      "git add"
+    ]
+  },
   "dependencies": {
     "@ant-design/icons-vue": "^1.0.1",
     "@sentry/browser": "^5.11.0",
@@ -30,9 +40,11 @@
     "vue-router": "^3.1.3",
     "vuex": "^3.1.2",
     "webpack-less-theme-plugin": "^2.1.0",
-    "xthk-utils": "git+ssh://git@gitee.com:xthk_frontend/xthk-utils.git"
+    "xthk-utils": "git+ssh://git@gitlab.xthktech.cn:xthk-web/public/xthk-utils.git"
   },
   "devDependencies": {
+    "@commitlint/cli": "^11.0.0",
+    "@commitlint/config-conventional": "^11.0.0",
     "@vue/cli-plugin-babel": "^3.12.1",
     "@vue/cli-plugin-eslint": "^3.12.1",
     "@vue/cli-service": "^3.12.1",
@@ -45,6 +57,7 @@
     "eslint": "^5.16.0",
     "eslint-plugin-vue": "^5.0.0",
     "less-loader": "^5.0.0",
+    "lint-staged": "^10.4.0",
     "node-sass": "^4.13.0",
     "sass-loader": "^7.3.1",
     "vue-template-compiler": "^2.6.11",
