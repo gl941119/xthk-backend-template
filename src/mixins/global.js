@@ -1,30 +1,30 @@
 import Vue from 'vue'
-import * as Sentry from '@sentry/browser'
-import * as Integrations from '@sentry/integrations'
+// import * as Sentry from '@sentry/browser'
+// import * as Integrations from '@sentry/integrations'
 
 import { mapGetters } from 'vuex'
 
-if (process.env.NODE_ENV === 'production') {
-  //此处为sentry的接入口
-  if (!Vue.prototype.$sentry) {
-    Vue.config.errorHandler = (err, vm, info) => {
-      console.error(err)
-    }
-    try {
-      Sentry.init({
-        dsn: decodeURIComponent(process.env.VUE_APP_SENTRY_DNS),
-        integrations: [new Integrations.Vue({ Vue })],
-        attachProps: true
-        //release: '版本号',
-        // environment: '环境，比如生产或者测试',
-        //debug: process.env.NODE_ENV !== 'production'
-      })
-      Vue.prototype.$sentry = Sentry
-    } catch (e) {
-      console.log('sentry init fail：', e)
-    }
-  }
-}
+// if (process.env.NODE_ENV === 'production') {
+//   //此处为sentry的接入口
+//   if (!Vue.prototype.$sentry) {
+//     Vue.config.errorHandler = (err, vm, info) => {
+//       console.error(err)
+//     }
+//     try {
+//       Sentry.init({
+//         dsn: decodeURIComponent(process.env.VUE_APP_SENTRY_DNS),
+//         integrations: [new Integrations.Vue({ Vue })],
+//         attachProps: true
+//         //release: '版本号',
+//         // environment: '环境，比如生产或者测试',
+//         //debug: process.env.NODE_ENV !== 'production'
+//       })
+//       Vue.prototype.$sentry = Sentry
+//     } catch (e) {
+//       console.log('sentry init fail：', e)
+//     }
+//   }
+// }
 Vue.mixin({
   data() {
     return {
