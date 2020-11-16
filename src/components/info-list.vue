@@ -161,7 +161,7 @@ export default {
 
       this.$emit('filters', filters)
 
-      if (this.currentSorted.filed !== sorter.filed || this.currentSorted.order !== sorter.order) {
+      if (this.currentSorted.field !== sorter.field || this.currentSorted.order !== sorter.order) {
         this.onSorter(sorter)
         this.currentSorted = sorter
       }
