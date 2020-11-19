@@ -7,7 +7,6 @@ const resolve = dir => {
   return path.join(__dirname, dir)
 }
 const webpack = require('webpack')
-const AddAssetHtmlPlugin = require('add-asset-html-webpack-plugin')
 
 module.exports = {
   /** 区分打包环境与开发环境
@@ -105,17 +104,12 @@ module.exports = {
     host: '0.0.0.0',
     port: 7788,
     https: false,
-    hotOnly: false
-    //代理服务器
-    // proxy: {
-    //   // '/api': {
-    //   //   target: "",
-    //   //   ws: true,
-    //   //   changeOrigin: true
-    //   // }
-    // } // string | Object
-
-    // before: app => {}
+    hotOnly: false,
+    proxy: {
+      '/api': {
+        target: `http://xthk_${process.env.PROXY_ENV || 1}.dev.xthktech.cn`
+      }
+    }
   },
   // 第三方插件配置
   pluginOptions: {
@@ -130,8 +124,8 @@ module.exports = {
       config.plugins.delete('preload')
 
       config
-      .plugin('ignore')
-      .use(new webpack.ContextReplacementPlugin(/moment[/\\]locale$/, /zh-cn$/))
+        .plugin('ignore')
+        .use(new webpack.ContextReplacementPlugin(/moment[/\\]locale$/, /zh-cn$/))
 
       // 压缩代码
       config.optimization.minimize(true)
@@ -154,7 +148,7 @@ module.exports = {
       config.optimization.runtimeChunk = {
         name: 'manifest'
       }
-      
+
     } else {
       config.module
         .rule('eslint')

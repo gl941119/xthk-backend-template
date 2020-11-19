@@ -1,5 +1,5 @@
 <template>
-  <div :placeholder="placeholder" :class="{"empty": !curLength, disabled: disabled}" class="rich-input-box">
+  <div :placeholder="placeholder" :class="baseStyle">
     <div
       ref="input"
       :class="customClass"
@@ -57,6 +57,14 @@ export default {
       inputValue: this.value,
       range: null,
       pasteText: ''
+    }
+  },
+  computed: {
+    baseStyle() {
+      return {
+        'rich-input-box': true,
+        'empty': !this.curLength, disabled: disabled
+      }
     }
   },
   watch: {

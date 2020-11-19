@@ -6,7 +6,7 @@ import Store from '@/store'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css' //这个样式必须引入
 import generate from './generate-router'
-import { getOwnInfo } from '_axios/user'
+import { getOwnInfo } from '_axios/xthy-sso/user'
 import { getAuthUserMenusList } from '_axios/permission'
 
 Vue.use(Router)

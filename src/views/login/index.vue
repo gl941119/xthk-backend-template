@@ -8,38 +8,13 @@
           </div>
           <a-form :form="form">
             <a-form-item>
-              <a-input
-                v-decorator="[
-                  'username',
-                  {
-                    rules: [
-                      {
-                        required: true,
-                        message: '请输入您的账号!'
-                      }
-                    ]
-                  }
-                ]"
-                :maxLength="11"
-                placeholder="请输入账号"
-                size="large"
-              >
+              <a-input v-decorator="nameDecorator" :maxLength="11" placeholder="请输入账号" size="large">
                 <a-icon v-slot:prefix style="color: rgba(0,0,0,.25)" type="user" />
               </a-input>
             </a-form-item>
             <a-form-item>
               <a-input
-                v-decorator="[
-                  'password',
-                  {
-                    rules: [
-                      {
-                        required: true,
-                        message: '请输入您的密码!'
-                      }
-                    ]
-                  }
-                ]"
+                v-decorator="pwdDecorator"
                 :maxLength="16"
                 placeholder="请输入密码"
                 type="password"
@@ -69,12 +44,34 @@
 
 <script>
 import { Modal } from 'ant-design-vue'
-import { login, getLoginCode, getCheckQrStatus } from '_axios/user'
+import { login, getLoginCode, getCheckQrStatus } from '_axios/xthy-sso/user'
 
 export default {
   data() {
     return {
-      islogin: false
+      islogin: false,
+      nameDecorator: ['username',
+        {
+          rules: [
+            {
+              required: true,
+              message: '请输入您的账号!'
+            }
+          ]
+        }
+      ],
+      pwdDecorator: [
+        'password',
+        {
+          rules: [
+            {
+              required: true,
+              message: '请输入您的密码!'
+            }
+          ]
+        }
+      ]
+
     }
   },
   beforeCreate() {

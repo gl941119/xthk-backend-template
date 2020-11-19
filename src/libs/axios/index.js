@@ -1,7 +1,9 @@
 import axios from 'axios'
 import store from '@/store'
 import config from '@/config'
-import { relogin } from '@/libs/util'
+import { relogin, isObject } from '@/libs/util'
+
+
 
 let logOutTimer = null
 /* 解析配置中默认参数 */
@@ -9,14 +11,16 @@ const DEFAULT = {
   baseUrl: config.baseUrl,
   timeout: config.timeout,
   name: config.name,
-  version: config.version
+  version: config.version,
+  device: config.device,
+  remoteTarget: ''
 }
 
 /**
  * 转换pagination的属性字符串为number
  * @param {Object} pagination
  */
-const convertPagination = function(pagination) {
+const convertPagination = function (pagination) {
   if (!Object.isObject(pagination)) return
   for (let o in pagination) {
     if (pagination.hasOwnProperty(o)) {
@@ -26,6 +30,23 @@ const convertPagination = function(pagination) {
     }
   }
 }
+
+
+/**
+ * URL前缀装饰器
+ */
+const decorateUrl = function () {
+  return function (target, name, decorater) {
+    const fn = decorater.value
+    decorater.value = function (...args) {
+      const { 0: url, 1: params, 2: options } = args
+      return fn.apply(this, [`${this._def.remoteTarget.replace(/\/$/, '')}/${url.replace(/^\//, '')}`, params, options])
+    }
+
+  }
+}
+
+
 
 /**
  * @class API请求封装
@@ -39,6 +60,7 @@ class Fetch {
   /**
    * @description get请求封装
    * */
+  @decorateUrl()
   get(url, params, options = {}) {
     return this._fetch({
       url,
@@ -50,6 +72,7 @@ class Fetch {
   /**
    * @description post请求封装
    * */
+  @decorateUrl()
   post(url, data, options = {}) {
     return this._fetch({
       url,
@@ -112,7 +135,7 @@ class Fetch {
             //Vue.prototype.$message.error('请重新登录')
           }, 150)
 
-          return new Promise(() => {})
+          return new Promise(() => { })
         default:
           return Promise.reject(data)
       }
@@ -134,6 +157,16 @@ class Fetch {
   }
 }
 
-export default new Fetch()
+export default new Fetch({ remoteTarget: config.remoteTarget })
 
 export { Fetch as FetchClass }
+
+/** 
+ * 生成fetch实例 
+ * @param {string} remoteTarget - 对应的api网关代理标识
+ * @param {object} options - 相应的请求设置项
+ */
+export const createFetchInstance = function (remoteTarget = '', options = {}) {
+  if (!isObject(options)) throw new Error('options参数只能是对象')
+  return new Fetch(Object.assign({}, { remoteTarget }, options))
+}
