@@ -6,8 +6,8 @@
       :format='format'
       :disabled='disabled'
       :value='timeValue'
-      @change='change'
       :getPopupContainer='getPopupContainer'
+      @change='change'
     />
     <span style='padding:0 8px;'>至</span>
     <a-time-picker

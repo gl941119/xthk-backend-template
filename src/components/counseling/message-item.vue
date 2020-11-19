@@ -2,8 +2,8 @@
   <div class='message-item' :class='itemStyle'>
     <template v-if='!messageItemType'>
       <div class='avatar'>
-        <a-avatar icon='user' :size='40' v-if='!avatar'></a-avatar>
-        <a-avatar :size='40' v-else :src='avatar'></a-avatar>
+        <a-avatar v-if='!avatar' icon='user' :size='40'></a-avatar>
+        <a-avatar v-else :size='40' :src='avatar'></a-avatar>
       </div>
       <div class='message-content-wrap'>
         <div class='message-name'>

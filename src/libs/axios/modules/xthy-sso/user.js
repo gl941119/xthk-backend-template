@@ -1,4 +1,6 @@
-import fetch from '../login-axios'
+import { createFetchInstance } from '@/libs/axios'
+const fetch = createFetchInstance('/api/common/xthy-sso/')
+
 
 /**
  * @description 登录接口

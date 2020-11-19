@@ -3,9 +3,9 @@
     <!-- 图片上传组件辅助-->
     <upload-oss :afterUpload="afterUpload" :getStsToken="getStsToken"></upload-oss>
     <quill-editor
-      class="editor"
-      v-model="content"
       ref="myQuillEditor"
+      v-model="content"
+      class="editor"
       :options="editorOption"
       @blur="onEditorBlur($event)"
       @focus="onEditorFocus($event)"

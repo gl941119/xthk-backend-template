@@ -2,10 +2,8 @@ import Vue from 'vue'
 import config from '@/config'
 import Store from '@/store'
 import router from '@/router'
-import { forEach, hasOneOf, objEqual } from '@/libs/tools'
+import { objEqual } from '@/libs/tools'
 import { sendMessage } from 'xthk-utils/system-communication'
-
-const { title } = config
 
 /**
  * @param {String} url
@@ -229,4 +227,12 @@ export const relogin = function() {
         Vue.prototype.$message.error('请重新登录')
     })
     //logOutTimer = null
+}
+
+/**
+ * 是否是对象
+ * @param {*} obj 
+ */
+export const isObject = obj => {
+    return Object.prototype.toString.call(obj) === '[object Object]'
 }

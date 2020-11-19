@@ -21,10 +21,12 @@ module.exports = {
   cookieExpires: 1,
   /**
    * @description api请求基础路径
+   * @deprecated
    */
   baseUrl: process.env.VUE_APP_BASE_URL,
   /**
    * @description api额外路径
+   * @deprecated
    */
   extraUrl: process.env.VUE_APP_EXTRA_URL,
   /**
@@ -47,5 +49,7 @@ module.exports = {
       showInHeader: true, // 设为false后不会在顶部显示错误日志徽标
       developmentOff: true // 设为true后在开发环境不会收集错误信息，方便开发中排查错误
     }
-  }
+  },
+  /** 默认的api网关代理前缀 */
+  remoteTarget: ''
 }
