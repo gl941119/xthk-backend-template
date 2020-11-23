@@ -4,7 +4,6 @@ import config from '@/config'
 import { relogin, isObject } from '@/libs/util'
 
 
-
 let logOutTimer = null
 /* 解析配置中默认参数 */
 const DEFAULT = {
@@ -12,8 +11,7 @@ const DEFAULT = {
   timeout: config.timeout,
   name: config.name,
   version: config.version,
-  device: config.device,
-  remoteTarget: ''
+  device: config.device
 }
 
 /**
@@ -32,21 +30,6 @@ const convertPagination = function (pagination) {
 }
 
 
-/**
- * URL前缀装饰器
- */
-const decorateUrl = function () {
-  return function (target, name, decorater) {
-    const fn = decorater.value
-    decorater.value = function (...args) {
-      const { 0: url, 1: params, 2: options } = args
-      return fn.apply(this, [`${this._def.remoteTarget.replace(/\/$/, '')}/${url.replace(/^\//, '')}`, params, options])
-    }
-
-  }
-}
-
-
 
 /**
  * @class API请求封装
@@ -54,14 +37,13 @@ const decorateUrl = function () {
 class Fetch {
   /**构造 */
   constructor(options = {}) {
-    this._def = Object.assign({}, DEFAULT, options)
+    this._def = options
   }
 
   /**
    * @description get请求封装
    * */
-  @decorateUrl()
-  get(url, params, options = {}) {
+  get (url, params, options = {}) {
     return this._fetch({
       url,
       method: 'get',
@@ -72,8 +54,7 @@ class Fetch {
   /**
    * @description post请求封装
    * */
-  @decorateUrl()
-  post(url, data, options = {}) {
+  post (url, data, options = {}) {
     return this._fetch({
       url,
       method: 'post',
@@ -85,7 +66,7 @@ class Fetch {
    * @description 请求体
    * @param {object} options 请求额外参数
    * */
-  _fetch(options) {
+  _fetch (options) {
     const opt = Object.assign({}, this._def, options.options)
     const headers = {
       Authorization: store.getters.getToken || ''
@@ -157,16 +138,15 @@ class Fetch {
   }
 }
 
-export default new Fetch({ remoteTarget: config.remoteTarget })
-
-export { Fetch as FetchClass }
-
 /** 
  * 生成fetch实例 
- * @param {string} remoteTarget - 对应的api网关代理标识
  * @param {object} options - 相应的请求设置项
  */
-export const createFetchInstance = function (remoteTarget = '', options = {}) {
+export const createFetchInstance = function (options = {}) {
   if (!isObject(options)) throw new Error('options参数只能是对象')
-  return new Fetch(Object.assign({}, { remoteTarget }, options))
+
+  return new Fetch(Object.assign({}, DEFAULT, options))
 }
+
+
+export default createFetchInstance()

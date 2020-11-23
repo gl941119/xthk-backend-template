@@ -1,5 +1,6 @@
 const CompressionPlugin = require('compression-webpack-plugin')
 const LessThemePlugin = require('webpack-less-theme-plugin')
+
 const isProduction = process.env.NODE_ENV === 'production'
 const path = require('path')
 const myConfig = require('./src/config/index')
@@ -71,7 +72,6 @@ module.exports = {
       sass: {
         data: `
                 @import "@/assets/scss/var.scss";
-                @import "@/assets/scss/transition.scss";
               `
       }
     }
@@ -99,15 +99,15 @@ module.exports = {
   // 所有 webpack-dev-server 的选项
   devServer: {
     open: process.platform === 'darwin',
-    //contentBase: path.join(__dirname, 'src'),
-    disableHostCheck: true,
+
+    disableHostCheck: false,
     host: '0.0.0.0',
     port: 7788,
     https: false,
     hotOnly: false,
     proxy: {
       '/api': {
-        target: `http://xthk_${process.env.PROXY_ENV || 1}.dev.xthktech.cn`
+        target: `https://xthk_${process.env.PROXY_ENV || 1}.dev.xthktech.cn`
       }
     }
   },
@@ -116,17 +116,24 @@ module.exports = {
     // ...
   },
   chainWebpack: config => {
+
     if (isProduction) {
-
-      // config.plugin('webpack-bundle-analyzer').use(require('webpack-bundle-analyzer').BundleAnalyzerPlugin)
-
       config.plugins.delete('prefetch')
       config.plugins.delete('preload')
-
-      config
-        .plugin('ignore')
-        .use(new webpack.ContextReplacementPlugin(/moment[/\\]locale$/, /zh-cn$/))
-
+      config.plugin('html').tap(args => {
+        args[0].hash = true
+        args[0].cdn = {
+          css: [],
+          js: [
+            '//cdn-web-assets.xthktech.cn/vue/2.6.12/vue.min.js',
+            '//cdn-web-assets.xthktech.cn/vue-router/3.0.7/vue-router.min.js',
+            '//cdn-web-assets.xthktech.cn/vuex/3.1.1/vuex.min.js',
+            '//cdn-web-assets.xthktech.cn/moment/2.24.0/moment.min.js',
+            '//cdn-web-assets.xthktech.cn/ant-design-vue/1.6.5/antd.min.js',
+          ]
+        }
+        return args
+      })
       // 压缩代码
       config.optimization.minimize(true)
       // 分割代码
@@ -137,7 +144,7 @@ module.exports = {
         cacheGroups: {
           vendor: {
             test: /[\\/]node_modules[\\/]/,
-            name(module) {
+            name (module) {
               const packageName = module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/)[1]
               return `chunk.${packageName.replace('@', '')}`
             },
@@ -148,7 +155,6 @@ module.exports = {
       config.optimization.runtimeChunk = {
         name: 'manifest'
       }
-
     } else {
       config.module
         .rule('eslint')
@@ -170,11 +176,6 @@ module.exports = {
       args[0].VERSION = '"' + (myConfig.version || '1.0.0') + '"'
       return args
     })
-
-    config.plugin('html').tap(args => {
-      args[0].hash = true
-      return args
-    })
   },
   configureWebpack: config => {
     if (isProduction) {
@@ -186,18 +187,6 @@ module.exports = {
           chunkFilename: `js/[name].[contenthash:8]-v${version}.js`
         },
         plugins: [
-          // new webpack.DllReferencePlugin({
-          //   context: process.cwd(),
-          //   manifest: require('./public/vendor/vendor-manifest.json')
-          // }), // 将 dll 注入到 生成的 html 模板中
-          // new AddAssetHtmlPlugin({
-          //   // dll文件位置
-          //   filepath: path.resolve(__dirname, './public/vendor/*.js'),
-          //   // dll 引用路径
-          //   publicPath: './vendor',
-          //   // dll最终输出的目录
-          //   outputPath: './vendor'
-          // }),
           new CompressionPlugin({
             filename: '[path].gz[query]',
             algorithm: 'gzip',
@@ -210,7 +199,14 @@ module.exports = {
             theme: './src/assets/less/index.less'
           }), //自己lessURL
           new webpack.ContextReplacementPlugin(/moment[\\\/]locale$/, /^\.\/(zh-cn)$/)
-        ]
+        ],
+        externals: {
+          'vue': 'Vue',
+          'vue-router': 'VueRouter',
+          'vuex': 'Vuex',
+          'ant-design-vue': 'antd',
+          'moment': 'moment',
+        },
       }
     } else {
       return {
