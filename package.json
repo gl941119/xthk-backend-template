@@ -6,8 +6,6 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint --fix",
-    "test": "vue-cli-service build --mode test",
-    "dev": "vue-cli-service build --mode dev",
     "dll": "webpack -p --progress --config ./webpack.dll.config.js",
     "lint-fix": "eslint --fix --ext .js --ext .jsx --ext .vue src/"
   },

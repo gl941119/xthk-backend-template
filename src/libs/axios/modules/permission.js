@@ -1,4 +1,4 @@
-import fetch from '@/libs/axios'
+import fetch from '@/libs/axios/axios'
 
 /**接口 */
 

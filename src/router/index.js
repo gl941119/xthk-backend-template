@@ -12,7 +12,7 @@ import { getAuthUserMenusList } from '_axios/permission'
 Vue.use(Router)
 
 /**路由白名单 */
-const whiteList = ['noapp', 'login']
+const whiteList = ['noapp', 'login', 'demo']
 
 /**
  * 路由对象
