@@ -21,7 +21,6 @@ module.exports = {
   cookieExpires: 1,
   /**
    * @description api请求基础路径(或api网关标识)
-   * @deprecated
    */
   baseUrl: '',
   /**

@@ -233,6 +233,6 @@ export const relogin = function() {
  * 是否是对象
  * @param {*} obj 
  */
-export const isObject = obj => {
+export const checkIsObject = obj => {
     return Object.prototype.toString.call(obj) === '[object Object]'
 }

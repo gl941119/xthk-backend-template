@@ -1,7 +1,7 @@
 import axios from 'axios'
 import store from '@/store'
 import config from '@/config'
-import { relogin, isObject } from '@/libs/util'
+import { relogin, checkIsObject } from '@/libs/util'
 
 
 let logOutTimer = null
@@ -143,7 +143,7 @@ class Fetch {
  * @param {object} options - 相应的请求设置项
  */
 export const createFetchInstance = function (options = {}) {
-  if (!isObject(options)) throw new Error('options参数只能是对象')
+  if (Object.prototype.toString.call(options) !== '[object Object]') throw new Error('options参数只能是对象')
 
   return new Fetch(Object.assign({}, DEFAULT, options))
 }
