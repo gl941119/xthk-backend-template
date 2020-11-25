@@ -1,21 +1,9 @@
 <template>
   <a-layout :class="'base-layout'">
     <!--左侧菜单栏-->
-    <sider-menu
-      :menus="menus"
-      :defaultOpenKeys="openKeys"
-      :defaultSelectedKeys="selectedMenuKeys"
-      :collapsible="collapsible"
-      @menuSelect="handleMenuSelect"
-    ></sider-menu>
+    <sider-menu :menus="menus" :defaultOpenKeys="openKeys" :defaultSelectedKeys="selectedMenuKeys" :collapsible="collapsible" @menuSelect="handleMenuSelect"></sider-menu>
     <a-layout-content :class="baseContentClass">
-      <head-tabs
-        v-if="allowShowGlobalHeadTabs"
-        :items.sync="tabs"
-        :defaultKey="defaultTabKey"
-        @tabSelect="handleTabSelect"
-        @tabRemove="handleTabRemove"
-      ></head-tabs>
+      <head-tabs v-if="allowShowGlobalHeadTabs" :items.sync="tabs" :defaultKey="defaultTabKey" @tabSelect="handleTabSelect" @tabRemove="handleTabRemove"></head-tabs>
       <div class="info-content">
         <keep-alive>
           <router-view v-if="this.$route.meta && this.$route.meta.keepAlive"></router-view>
@@ -38,7 +26,7 @@ export default {
     SiderMenu,
     HeadTabs
   },
-  data() {
+  data () {
     return {
       collapsible: true,
       keepAliveInfos,
@@ -52,27 +40,27 @@ export default {
     }
   },
   computed: {
-    baseContentClass() {
+    baseContentClass () {
       return {
         'base-content': true
       }
     }
   },
-  async created() {
+  async created () {
     //成生菜单数据
     const data = await this.generateMenus()
     this.menus = data
     this._initInfo()
     console.log(this.menus)
   },
-  mounted() { },
+  mounted () { },
   methods: {
     /**初始化相关数据 */
-    _initInfo() {
+    _initInfo () {
       this._init_menu_default_select()
     },
     /**设置菜单默认选中值 */
-    _init_menu_default_select() {
+    _init_menu_default_select () {
       //设置菜单项的默认选中值
       if (this.menus && this.menus.length) {
         let {
@@ -136,22 +124,22 @@ export default {
       }
     },
     /**添加tab项 */
-    addTab({ name, title }) {
+    addTab ({ name, title }) {
       this.tabs.push({ key: name, title, name })
       this.defaultTabKey = name
     },
     /**tab项被选中 */
-    handleTabSelect(item) {
+    handleTabSelect (item) {
       this.selectedMenuKeys = [item.name]
       this.defaultTabKey = item.name
       this.$route.name !== item.name && this.$router.push({ name: item.name })
     },
     /**tab项被移出 */
-    handleTabRemove(item) {
+    handleTabRemove (item) {
       console.log(item)
     },
     /**菜单项被选中 */
-    handleMenuSelect(menu) {
+    handleMenuSelect (menu) {
       const {
         name,
         meta: { title = '' }
@@ -177,6 +165,10 @@ export default {
   .base-content {
     display: flex;
     flex-direction: column;
+    .tab-wrap {
+      flex: 0 0 auto;
+      height: 40px;
+    }
     .info-content {
       flex: 1 auto;
       overflow: auto;
