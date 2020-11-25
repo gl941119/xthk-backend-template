@@ -166,7 +166,8 @@ export default {
     display: flex;
     flex-direction: column;
     .tab-wrap {
-      flex: 0 auto;
+      flex: 0 0 auto;
+      height: 40px;
     }
     .info-content {
       flex: 1 auto;
