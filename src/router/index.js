@@ -13,7 +13,7 @@ Vue.use(Router)
 
 /**路由白名单 */
 const whiteList = ['noapp', 'login', 'demo']
-
+const isDev = process.env.NODE_ENV === 'development'
 /**
  * 路由对象
  * route对应的基本结构为:
@@ -109,10 +109,10 @@ const router = new Router({
 })
 
 /**获得用户相关的菜单或权限信息 */
-const getUserPermissions = function () {
+const getUserPermissions = async function () {
   let arr = []
 
-  if (process.env.NODE_ENV === 'development') {
+  if (isDev) {
     const menus = (routes.find(m => m.path === '/') || { children: [] }).children
     const fn = (items) => {
       items.forEach(m => {
@@ -126,42 +126,49 @@ const getUserPermissions = function () {
     }
     fn(menus)
   }
-  return getAuthUserMenusList()
-    .then(({ data: { menus, permissions } = { menus: [], permissions: [] } }) => {
-      process.env.NODE_ENV === 'development' && (menus = arr)
-      Store.commit('setOwnAuth', {
-        menus,
-        permissions
+  let r
+  try {
+    r = await getAuthUserMenusList()
+      .then(({ data: { menus, permissions } = { menus: [], permissions: [] } }) => {
+        isDev && (menus = arr)
+        return {
+          menus,
+          permissions
+        }
       })
-      console.log('process.env.NODE_ENV', process.env.NODE_ENV, menus)
-      return {
-        menus,
-        permissions
+  } catch ({ message }) {
+    Vue.prototype.$message.error(message)
+    if (isDev) {
+      r = {
+        menus: arr,
+        permissions: []
       }
-    })
-    .catch(({ message }) => {
-      Vue.prototype.$message.error(message)
+    } else {
       router.replace({
         name: 'noapp'
       })
-    })
+    }
+  }
+  r && Store.commit('setOwnAuth', r)
+  return r
 }
 
 /**获得用户信息 */
-const getUserInfo = function () {
-  const user = Store.getters.getUser
+const getUserInfo = async function () {
+  let user = Store.getters.getUser
   if (!user) {
-    console.count('获得用户信息')
-    return getOwnInfo()
-      .then(({ data }) => {
-        Store.commit('setUser', data)
-        return data
-      })
-      .catch(() => { })
+    try {
+      user = await getOwnInfo()
+        .then(({ data }) => {
+          Store.commit('setUser', data)
+          return data
+        })
+    } catch (err) {
+      // 处理相关错误
+      console.warn(err)
+    }
   }
-  return new Promise(resolve => {
-    resolve(user)
-  })
+  return user
 }
 
 //路由守卫钩子，可根据项目需要进行拦截处理
