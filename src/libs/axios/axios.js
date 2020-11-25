@@ -1,7 +1,7 @@
 import axios from 'axios'
 import store from '@/store'
 import config from '@/config'
-import { relogin, checkIsObject } from '@/libs/util'
+import { relogin } from '@/libs/util'
 
 
 let logOutTimer = null
@@ -123,14 +123,21 @@ class Fetch {
     }
     /* 响应失败拦截 */
     const responseFail = error => {
-      if (error && error.response) {
+      const res = error?.response
+      let errInfo = { message: '网络异常，请稍后再试' }
+      if (res) {
+        const { data } = res
         const div = document.createElement('div')
-        div.innerHTML = error.response.data
-        let msg = div.innerText
-        return Promise.reject({ message: msg })
-      } else {
-        return Promise.reject({ message: '网络异常，请稍后再试' })
+        div.innerHTML = errInfo.message
+        if (typeof data === 'string') {
+          div.innerHTML = data
+        } else {
+          console.error('NetWork Error', data)
+        }
+        errInfo.message = div.innerText
       }
+      return Promise.reject(errInfo)
+
     }
     // 添加响应拦截器
     instance.interceptors.response.use(responseSuccess, responseFail)
