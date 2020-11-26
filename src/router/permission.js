@@ -41,7 +41,8 @@ const permission = [
         },
         component: () => import(/* webpackChunkName: "permission" */ '../views/permission/group')
       }
-    ]
+    ],
+    sort: 9990
   }
 ]
 

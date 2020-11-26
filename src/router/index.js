@@ -20,7 +20,7 @@ const isDev = process.env.NODE_ENV === 'development'
  * {
  *    path: '',
       name: '',
-      redirect: '',
+      redirect: '',      
       meta: { 
           title: '',
           icon:'',//图标名称
@@ -35,7 +35,8 @@ const isDev = process.env.NODE_ENV === 'development'
           keepAlive:undefined // 是否保存当前页面状态.默认未定义
       },
       children: [],
-      component:            
+      component:{},
+      sort:0 // 呈现顺序。越小赵前，越大越后
  * }
  *  preRoute:可以为数组用来模拟 多级路由的层级
  *  preRoute:[
