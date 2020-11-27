@@ -156,8 +156,14 @@ export default {
         if (menu) {
           let currentMenu = menu
           if (menu.hidden) { // 如果当前为隐藏菜单,preRoute
-            const { name, parentMenu } = menu.preRoute
-            menu = this._findRoute(name) || parentMenu
+            if (menu?.meta?.preRoute) {
+              const { name, parentMenu } = menu?.meta?.preRoute
+              menu = this._findRoute(name) || parentMenu
+            } else {
+              this.$router.replace({ name: 'noapp' })
+              return
+            }
+
           }
 
           let p = menu.parentMenu
