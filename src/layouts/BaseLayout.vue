@@ -3,13 +3,29 @@
     <!--左侧菜单栏-->
     <sider-menu :menus="menus" :defaultOpenKeys="openKeys" :defaultSelectedKeys="selectedMenuKeys" :collapsible="collapsible" @menuSelect="handleMenuSelect"></sider-menu>
     <a-layout-content :class="baseContentClass">
-      <head-tabs v-if="allowShowGlobalHeadTabs" :items.sync="tabs" :defaultKey="defaultTabKey" @tabSelect="handleTabSelect" @tabRemove="handleTabRemove"></head-tabs>
+      <div class="tab-wrap">
+        <head-tabs v-if="allowShowGlobalHeadTabs" :items.sync="tabs" :defaultKey="defaultTabKey" @tabSelect="handleTabSelect" @tabRemove="handleTabRemove"></head-tabs>
+        <div class="extend">
+          <span>当前角色：</span>
+          <a @click="changeModalVisible=true">
+            <a-icon type="swap" />
+          </a>
+        </div>
+      </div>
       <div class="info-content">
         <keep-alive>
           <router-view v-if="this.$route.meta && this.$route.meta.keepAlive"></router-view>
         </keep-alive>
         <router-view v-if="!this.$route.meta || !this.$route.meta.keepAlive"></router-view>
       </div>
+      <a-modal v-model="changeModalVisible" :maskClosable="false" title="切换角色" wrapClassName="change-role-modal" width="480px">
+        <div class="inner-wrap">
+          <span>当前角色：</span>
+          <a-select style="width:224px;">
+            <a-select-option key="1" value="1">这是一个角色</a-select-option>
+          </a-select>
+        </div>
+      </a-modal>
     </a-layout-content>
   </a-layout>
 </template>
@@ -36,7 +52,8 @@ export default {
       defaultTabKey: '1',
       ...mapActions(['generateMenus']),
       tabs: [],
-      menus: []
+      menus: [],
+      changeModalVisible: false
     }
   },
   computed: {
@@ -59,8 +76,33 @@ export default {
     _initInfo () {
       this._init_menu_default_select()
     },
+    /** 
+     * 查找相应的路由
+     * @param {string} name - 要查找的路由名称
+     * @param {array} rotuers - 所有的路由信息
+     */
+    _findRoute (name, routers = this.menus) {
+      let result
+      const flat = (menus) => {
+        for (let i = 0, len = menus.length; i < len; i++) {
+          const n = menus[i]
+          if (n.name === name) {
+            result = n
+            break
+          }
+          if (n.children && n.children.length) {
+            flat(n.children)
+          }
+          if (result) break
+        }
+      }
+      flat(routers)
+      return result
+
+    },
     /**设置菜单默认选中值 */
     _init_menu_default_select () {
+
       //设置菜单项的默认选中值
       if (this.menus && this.menus.length) {
         let {
@@ -98,7 +140,10 @@ export default {
                 menu = m
                 return true
               } else if (m.showChildren) {
-                const r = funFind(m.showChildren)
+                let r = funFind(m.showChildren) //先从可见的子级菜单中查找
+                if (!r) { // 未找到从不可见菜单中查找
+                  r = funFind(m.children)
+                }
                 return !!r
               }
               return false
@@ -109,14 +154,20 @@ export default {
         }
 
         if (menu) {
-          this.selectedMenuKeys = [menu.name]
+          let currentMenu = menu
+          if (menu.hidden) { // 如果当前为隐藏菜单,preRoute
+            const { name, parentMenu } = menu.preRoute
+            menu = this._findRoute(name) || parentMenu
+          }
+
           let p = menu.parentMenu
           while (p) {
             this.openKeys.push(p.name)
             p = p.parentMenu
           }
+          this.selectedMenuKeys = [menu.name]
           // menu.parent && this.openKeys.push(menu.parent)
-          if (this.$route.name !== menu.name && !preRoute) this.$router.push({ name: menu.name })
+          if (this.$route.name !== currentMenu.name && !preRoute) this.$router.push({ name: currentMenu.name })
           this.addTab({ name: menu.name, title: menu.meta.title })
         } else {
           this.$router.replace({ name: 'noapp' })
@@ -166,8 +217,32 @@ export default {
     display: flex;
     flex-direction: column;
     .tab-wrap {
+      display: flex;
+      flex-direction: row;
       flex: 0 0 auto;
       height: 40px;
+      border-bottom: 1px solid #e8e8e8;
+      background-color: #ffffff;
+      .collapsed {
+        border: 0 none;
+        box-shadow: none;
+      }
+      > :first-child {
+        flex: 1;
+      }
+      > .extend {
+        flex: 0 auto;
+        display: flex;
+        align-items: center;
+        padding: 0 26px 0;
+        font-size: 14px;
+        span + a {
+          margin-left: 1em;
+        }
+        i {
+          font-size: 14px;
+        }
+      }
     }
     .info-content {
       flex: 1 auto;
@@ -177,6 +252,25 @@ export default {
 
       > .router-container {
         height: auto !important;
+      }
+    }
+  }
+}
+
+.change-role-modal {
+  .ant-modal {
+    height: 188px;
+  }
+
+  .ant-modal-body {
+    .inner-wrap {
+      text-align: center;
+      > :first-child {
+        display: inline-block;
+        flex: 0 auto;
+      }
+      > :not(:first-child) {
+        flex: 1;
       }
     }
   }
