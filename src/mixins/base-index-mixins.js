@@ -83,7 +83,9 @@ export default {
       /**默认的模式窗口属性 */
       defaultModalProps: {},
       /**查询表单区域Col栅格占位格数*/
-      queryFormColSpan: 6
+      queryFormColSpan: 6,
+      /** 显示表格边框 */
+      showTableBorder: true
     }
   },
   created () {
@@ -382,7 +384,9 @@ export default {
       showHeader: this.showTableHeader,
       onSorter: this.handleSorter,
       onPageChange: this.handlePageChange
+
     }
+
 
     /**默认模式窗口属性 */
     const modalProps = Object.assign(
@@ -409,6 +413,14 @@ export default {
       }
     }
 
+    // 查询区域扩展按钮
+    const extraButton = this.$slots.extraButton
+      ? (typeof this.$slots.extraButton === 'function' && this.$slots.extraButton()) ||
+      (Object.isObject(this.$slots.extraButton) &&
+        this.$slots.extraButton.hasOwnProperty('render') &&
+        h(this.$slots.extraButton))
+      : this.renderExtraButtonSlot()
+
     const baseView = (
       <div class={ 'base-view ' + this.baseViewClass }>
         {this.$slots.beforeQuery
@@ -417,28 +429,25 @@ export default {
             this.$slots.extraButton.hasOwnProperty('render') &&
             h(this.$slots.beforeQuery))
           : this.renderBeforeQuerySlot() }
-        <a-form class="query-form" form={ this.form }>
-          { $query }
-          <a-row gutter={ 32 } type="flex">
-            { this.showAddButton && (
-              <a-col span={ 2 }>
-                <a-button type="primary" loading={ this.addButtonLoading } on-click={ this.handleAdd }>
-                  { this.showAddButtonIcon && <a-icon type={ this.addButtonIconType } /> }
-                  <span>{ this.addButtonText }</span>
-                </a-button>
-              </a-col>
-            ) }
-            <a-col span={ 22 }>
-              {//操作按钮slot= slot=extraButton
-                this.$slots.extraButton
-                  ? (typeof this.$slots.extraButton === 'function' && this.$slots.extraButton()) ||
-                  (Object.isObject(this.$slots.extraButton) &&
-                    this.$slots.extraButton.hasOwnProperty('render') &&
-                    h(this.$slots.extraButton))
-                  : this.renderExtraButtonSlot() }
-            </a-col>
-          </a-row>
-        </a-form>
+        {
+          this.showAddButton || $query || extraButton ?
+            <a-form class="query-form" form={ this.form }>
+              { $query }
+              <a-row gutter={ 32 } type="flex">
+                { this.showAddButton && (
+                  <a-col span={ 2 }>
+                    <a-button type="primary" loading={ this.addButtonLoading } on-click={ this.handleAdd }>
+                      { this.showAddButtonIcon && <a-icon type={ this.addButtonIconType } /> }
+                      <span>{ this.addButtonText }</span>
+                    </a-button>
+                  </a-col>
+                ) }
+                <a-col span={ 22 }>
+                  { extraButton }
+                </a-col>
+              </a-row>
+            </a-form> : null
+        }
         {// 列表slot=infoList
           this.showInfoList &&
           (this.$slots.infoList ? (
