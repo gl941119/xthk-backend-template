@@ -285,6 +285,24 @@ export default {
       return () => {
         return [...vNodes]
       }
+    },
+    /** 获得当前列表的Props属性 */
+    getCurrentInfoListProps () {
+      return {
+        columns: this.columns,
+        source: [...this.dataSource],
+        pageSettings: this.paginationSettings,
+        pagination: this.pagination,
+        rowSelection: this.rowSelection,
+        scroll: this.tableScroll,
+        rowKey: this.rowKey,
+        loading: this.loading,
+        showTotals: false,
+        showHeader: this.showTableHeader,
+        onSorter: this.handleSorter,
+        onPageChange: this.handlePageChange
+
+      }
     }
   },
   /** 生成查询条件页 */
@@ -386,21 +404,7 @@ export default {
       const $query = Reflect.apply(this.$options.__buildQuerySlot__, this, [h, c])
 
       //设置列表属性
-      const infoListProps = {
-        columns: this.columns,
-        source: [...this.dataSource],
-        pageSettings: this.paginationSettings,
-        pagination: this.pagination,
-        rowSelection: this.rowSelection,
-        scroll: this.tableScroll,
-        rowKey: this.rowKey,
-        loading: this.loading,
-        showTotals: false,
-        showHeader: this.showTableHeader,
-        onSorter: this.handleSorter,
-        onPageChange: this.handlePageChange
-
-      }
+      const infoListProps = this.getCurrentInfoListProps()
 
 
       /**默认模式窗口属性 */
@@ -471,7 +475,12 @@ export default {
         </a-modal>
       )
       Array.prototype.push.apply(renderNodes, [baseView, modalVnode])
+
+    } else {
+      const $node = (this.$slots.extra && gsNode(this.$slots.extra, h)) || this.renderExtraSlot()
+      $node && (scopedSlots.extra = () => ($node))
     }
+
     const defaultVnode = (this.$slots.default && gsNode(this.$slots.default, h)) || this.renderDefaultSlot()
 
     renderNodes.push(defaultVnode)
