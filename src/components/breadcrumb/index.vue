@@ -8,14 +8,13 @@
 </template>
 
 <script>
-
 export default {
   name: 'BreadCrumb',
-  data() {
+  data () {
     return {}
   },
   computed: {
-    breadcrumb() {
+    breadcrumb () {
       let info = this.$route.matched.filter(({ path, redirect: { name } = { name: '' }, components }, index) => {
         return index === 1 || (path && !name)
       })
@@ -41,10 +40,10 @@ export default {
       return info
     }
   },
-  mounted() { },
+  mounted () { },
   methods: {
     /** 只读路由 */
-    $_onlyReadRouter(route, routes) {
+    $_onlyReadRouter (route, routes) {
       return routes.indexOf(route) === 0 || routes.indexOf(route) === routes.length - 1
     }
   }

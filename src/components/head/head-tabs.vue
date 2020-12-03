@@ -1,15 +1,6 @@
 <template>
   <div :class="myClass">
-    <a-tabs
-      v-model="activeKey"
-      :class="headTabClass"
-      :hideAdd="hideAdd"
-      :tabBarGutter="tabBarGutter"
-      type="editable-card"
-      @change="handleChange"
-      @edit="handelEdit"
-      @tabClick="handleTabClick"
-    >
+    <a-tabs v-model="activeKey" :class="headTabClass" :hideAdd="hideAdd" :tabBarGutter="tabBarGutter" type="editable-card" @change="handleChange" @edit="handelEdit" @tabClick="handleTabClick">
       <a-tab-pane v-for="item in menus" :key="item.key" :closable="closable && menus.length > 1">
         <template v-slot:tab>
           <div class="tab-inner">
@@ -69,7 +60,7 @@ export default {
       default: null
     }
   },
-  data() {
+  data () {
     return {
       menus: [],
       activeKey: 0,
@@ -78,32 +69,32 @@ export default {
   },
   computed: {
     ...mapGetters(['showAvatar', 'allowCollapsed']),
-    headTabClass() {
+    headTabClass () {
       return { 'head-tabs': true }
     },
     //是否允许关闭当前tabPane
-    allowClosableTab() {
+    allowClosableTab () {
       return this.closable && this.menus.length > 1
     },
-    myClass() {
+    myClass () {
       return {
         collapsed: this.allowCollapsed
       }
     }
   },
   watch: {
-    defaultKey(c, o) {
+    defaultKey (c, o) {
       if (c !== o) {
         this.activeKey = c
       }
     },
-    items(c, o) {
+    items (c, o) {
       if (c !== o) {
         this.menus = c || []
       }
     },
     $route: {
-      handler(c, o) {
+      handler (c, o) {
         // 移出tab时，需要从keepAlive 里，移出对应的页面缓存
         if (o && o.meta && o.meta.keepAlive) {
           const len = o.matched.length
@@ -142,7 +133,7 @@ export default {
       immediate: true
     }
   },
-  created() {
+  created () {
     this.menus = this.items || []
     this.activeKey = this.defaultKey
     this._is_remove_tab_ = false
@@ -157,21 +148,21 @@ export default {
   },
 
   methods: {
-    handleChange(activeKey) {
+    handleChange (activeKey) {
       if (this.tabSelect) {
         this.tabClick(this.menus.find(m => m.key === activeKey))
       } else {
         this.$emit('tabSelect', this.menus.find(m => m.key === activeKey))
       }
     },
-    handleTabClick(activeKey) {
+    handleTabClick (activeKey) {
       if (this.tabClick) {
         this.tabClick(this.menus.find(m => m.key === activeKey))
       } else {
         this.$emit('tabClick', this.menus.find(m => m.key === activeKey))
       }
     },
-    handelEdit(targetKey, action) {
+    handelEdit (targetKey, action) {
       this[action](targetKey)
       if (!this.tempKeep[targetKey]) return
       const { key, cache, keys } = this.tempKeep[targetKey]
@@ -186,7 +177,7 @@ export default {
 
     },
     /**移出tab项 */
-    remove(targetKey) {
+    remove (targetKey) {
       //当tab项只有一个不能进行移出操作
       if (this.menus.length === 1) return
       const length = this.menus.length
@@ -223,7 +214,7 @@ export default {
 
 <style lang="scss">
 .collapsed {
-  padding-left: 24px;
+  padding-left: 32px;
   background-color: #fff;
   margin-bottom: 0;
 

@@ -1,38 +1,14 @@
 <template>
-  <a-layout-sider
-    v-model="myCollapsed"
-    class="side"
-    :class="collapsedClass"
-    :width="width"
-    :theme="theme"
-    :collapsedWidth="40"
-    :trigger="null"
-  >
+  <a-layout-sider v-model="myCollapsed" class="side" :class="collapsedClass" :width="width" :theme="theme" :collapsedWidth="40" :trigger="null">
     <div class="side-inner">
       <div v-if="showAvatar !== false" class="avatar">
         <a-avatar v-if="!user.avatar" :size="!myCollapsed ? 64 : 32" icon="user" />
         <a-avatar v-else :size="!myCollapsed ? 64 : 32" :src="user.avatar"></a-avatar>
         <div class="name">{{ user.real_name }}</div>
       </div>
-      <a-icon
-        v-if="allowCollapsed"
-        :title="collapsibleTitle"
-        class="trigger"
-        :type="triggerType"
-        @click="() => (myCollapsed = !myCollapsed)"
-      />
+      <a-icon v-if="allowCollapsed" :title="collapsibleTitle" class="trigger" :type="triggerType" @click="() => (myCollapsed = !myCollapsed)" />
       <div class="menu-wrap">
-        <my-a-menu
-          v-model="selectedKeys"
-          :inlineCollapsed="myCollapsed"
-          :theme="theme"
-          :inlineIndent="12"
-          :defaultOpenKeys="defaultOpenKeys"
-          mode="inline"
-          :menus="menus"
-          @click="handleMenuClick"
-          @select="handleMenuSelect"
-        ></my-a-menu>
+        <my-a-menu v-model="selectedKeys" :inlineCollapsed="myCollapsed" :theme="theme" :inlineIndent="12" :defaultOpenKeys="defaultOpenKeys" mode="inline" :menus="menus" @click="handleMenuClick" @select="handleMenuSelect"></my-a-menu>
       </div>
     </div>
   </a-layout-sider>
@@ -85,7 +61,7 @@ export default {
       default: null
     }
   },
-  data() {
+  data () {
     return {
       selectedKeys: [],
       myCollapsed: false
@@ -93,52 +69,52 @@ export default {
   },
   computed: {
     ...mapGetters(['showAvatar', 'allowCollapsed']),
-    user() {
+    user () {
       return this.$store.getters.getUser || {}
     },
-    triggerType() {
+    triggerType () {
       return this.myCollapsed ? 'menu-unfold' : 'menu-fold'
     },
-    collapsedClass() {
+    collapsedClass () {
       return this.myCollapsed ? 'my-collapsed' : ''
     },
-    collapsibleTitle() {
+    collapsibleTitle () {
       return this.myCollapsed ? '展开菜单栏' : '收缩菜单栏'
     }
   },
   watch: {
-    defaultSelectedKeys(c, o) {
+    defaultSelectedKeys (c, o) {
       if (c !== o) {
         this.selectedKeys = c
       }
     },
-    selectedKeys(c, o) {
+    selectedKeys (c, o) {
       this.$emit('update:defaultSelectedKeys', c)
     },
-    myCollapsed(c, o) {
+    myCollapsed (c, o) {
       if (c !== o) {
         this.$emit('update:collapsed', c)
       }
     },
-    collapsed(c, o) {
+    collapsed (c, o) {
       if (c !== o) {
         this.myCollapsed = c
       }
     },
     menus: {
-      handler(c) {
+      handler (c) {
         console.log({ c })
       },
       immediate: true
     }
   },
-  created() {
+  created () {
     this.selectedKeys = this.defaultSelectedKeys
     this.myCollapsed = this.collapsed
   },
   methods: {
     /*查找对应name的菜单项 */
-    _findMenu(name) {
+    _findMenu (name) {
       const fun = (menus) => {
         let menu
         menus.find(m => {
@@ -160,7 +136,7 @@ export default {
     /**
      * 菜单项点击事件
      */
-    handleMenuClick({ item, key, keyPath }) {
+    handleMenuClick ({ item, key, keyPath }) {
       const menu = this._findMenu(key)
       const { name } = this.$route || { name: '' }
       const current = this.selectedKeys[0]
@@ -175,7 +151,7 @@ export default {
       }
     },
     /** 菜单项选中事件 */
-    handleMenuSelect({ item, key, keyPath }) {
+    handleMenuSelect ({ item, key, keyPath }) {
       const menu = this._findMenu(key)
       if (this.menuSelect) {
         this.menuSelect(menu)
@@ -238,8 +214,9 @@ export default {
     cursor: pointer;
     transition: color 0.3s;
     position: absolute;
-    top: $base-space-size;
-    right: -24px;
+    top: $base-space-size + 3px;
+    right: -30px;
+    z-index: 1;
   }
 
   &::after {

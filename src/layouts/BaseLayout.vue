@@ -3,8 +3,8 @@
     <!--左侧菜单栏-->
     <sider-menu :menus="menus" :defaultOpenKeys="openKeys" :defaultSelectedKeys="selectedMenuKeys" :collapsible="collapsible" @menuSelect="handleMenuSelect"></sider-menu>
     <a-layout-content :class="baseContentClass">
-      <div class="tab-wrap">
-        <head-tabs v-if="allowShowGlobalHeadTabs" :items.sync="tabs" :defaultKey="defaultTabKey" @tabSelect="handleTabSelect" @tabRemove="handleTabRemove"></head-tabs>
+      <div v-if="allowShowGlobalHeadTabs" class="tab-wrap">
+        <head-tabs :items.sync="tabs" :defaultKey="defaultTabKey" @tabSelect="handleTabSelect" @tabRemove="handleTabRemove"></head-tabs>
         <div class="extend">
           <span>当前角色：</span>
           <a @click="changeModalVisible=true">
