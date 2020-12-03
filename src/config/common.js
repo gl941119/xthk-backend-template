@@ -21,4 +21,4 @@ export const keepAliveInfos = {
 /**
  * 允许显示全局的顶部tab项
  */
-export const allowShowGlobalHeadTabs = true
+export const allowShowGlobalHeadTabs = false

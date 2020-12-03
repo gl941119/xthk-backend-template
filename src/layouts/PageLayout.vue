@@ -1,6 +1,8 @@
 <template>
   <div class="layout">
-    <bread-crumb v-if="showBreadCrumb"></bread-crumb>
+    <div :class="headerClass">
+      <bread-crumb v-if="showBreadCrumb"></bread-crumb>
+    </div>
     <a-card class="layout-card" :title="title" :bordered="false">
       <template v-slot:extra>
         <div>
@@ -14,6 +16,7 @@
 
 <script>
 import BreadCrumb from '_c/breadcrumb'
+import { allowShowGlobalHeadTabs } from '@/config/common'
 export default {
   name: 'PageLayout',
   components: {
@@ -26,8 +29,14 @@ export default {
     }
   },
   computed: {
-    title() {
+    title () {
       return this.$route.meta.title
+    },
+    headerClass () {
+      return {
+        'layout__header': true,
+        'show-silder': !allowShowGlobalHeadTabs
+      }
     }
   }
 }
@@ -35,6 +44,17 @@ export default {
 
 <style lang="scss">
 .layout {
+  &__header {
+    display: flex;
+    flex-direction: row;
+
+    &:last-child {
+      flex: 1;
+    }
+    &.show-silder {
+      padding-left: 32px;
+    }
+  }
   .layout-card {
     & > .ant-card-head {
       border-bottom: none;
