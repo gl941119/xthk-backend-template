@@ -2,15 +2,27 @@
   <div class="layout">
     <div :class="headerClass">
       <bread-crumb v-if="showBreadCrumb"></bread-crumb>
+      <slot name="headerExtra"></slot>
     </div>
-    <a-card class="layout-card" :title="title" :bordered="false">
-      <template v-slot:extra>
-        <div>
-          <slot name="extra"></slot>
+    <div :class="layoutInnerClass">
+      <template v-if="!useCustomLayout">
+        <a-card class="layout-card" :title="title" :bordered="false">
+          <template v-slot:extra>
+            <div>
+              <slot name="extra"></slot>
+            </div>
+          </template>
+          <slot></slot>
+        </a-card>
+      </template>
+      <!--自定义内容区域-->
+      <template v-else>
+        <slot name="extra"></slot>
+        <div class="custom-layout__inner">
+          <slot></slot>
         </div>
       </template>
-      <slot></slot>
-    </a-card>
+    </div>
   </div>
 </template>
 
@@ -26,6 +38,11 @@ export default {
     showBreadCrumb: {
       type: Boolean,
       default: true
+    },
+    /** 使用自定义内容层 */
+    useCustomLayout: {
+      type: Boolean,
+      default: false
     }
   },
   computed: {
@@ -37,6 +54,12 @@ export default {
         'layout__header': true,
         'show-silder': !allowShowGlobalHeadTabs
       }
+    },
+    layoutInnerClass () {
+      return {
+        'layout__inner': true,
+        'custom-layout': this.useCustomLayout
+      }
     }
   }
 }
@@ -44,11 +67,37 @@ export default {
 
 <style lang="scss">
 .layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  height: 100%;
+  .breadcrumb {
+    background-color: #ffffff;
+    flex: 1;
+  }
+
+  &__inner {
+    flex: 1;
+    overflow-y: auto;
+
+    &.custom-layout {
+      display: flex;
+      flex-direction: column;
+      padding: 0px !important;
+      overflow: hidden;
+      .custom-layout__inner {
+        flex: 1;
+        overflow-y: auto;
+      }
+    }
+  }
+
   &__header {
     display: flex;
     flex-direction: row;
-
-    &:last-child {
+    border-bottom: 1px solid #f0f2f5;
+    background-color: #ffffff;
+    .breadcrumb {
       flex: 1;
     }
     &.show-silder {
@@ -56,6 +105,12 @@ export default {
     }
   }
   .layout-card {
+    display: flex;
+    flex-direction: column;
+    flex: 0 auto;
+    min-height: 100%;
+    background-color: #ffffff;
+
     & > .ant-card-head {
       border-bottom: none;
       .ant-card-head-wrapper {
@@ -79,6 +134,26 @@ export default {
     }
     & > .ant-card-body {
       padding: 0 32px 24px;
+    }
+  }
+  .ant-card-head {
+    padding: 0 32px;
+    flex: 0 0 auto;
+  }
+  .ant-card-body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+  .ant-card-head-wrapper {
+    &::after {
+      content: '';
+      height: 1px;
+      position: absolute;
+      left: 0;
+      top: 56px;
+      width: 100%;
+      // background-color: #f0f2f5;
     }
   }
 }

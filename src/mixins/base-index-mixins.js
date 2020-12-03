@@ -85,7 +85,9 @@ export default {
       /**查询表单区域Col栅格占位格数*/
       queryFormColSpan: 6,
       /** 显示表格边框 */
-      showTableBorder: true
+      showTableBorder: true,
+      /** 使用自定义布局 */
+      useCustomLayout: false
     }
   },
   created () {
@@ -338,152 +340,146 @@ export default {
       return queryItems
     }
   },
+  /** 获得插槽节点 */
+  getSlotNode (slot, h) {
+
+    if (typeof slot === 'function') {
+      return slot()
+    } else if (Object.isObject(slot)) {
+      if (Reflect.has(slot, 'render')) {
+        const r = slot['render']
+        return typeof r === 'function' ? slot.render() : r.constructor.name === 'VNode' ? r : h(r)
+      }
+    }
+
+    return slot
+  },
   render (h, c) {
-    const scopedSlots = {
-      extra: props => {
-        return (
-          <div>
-            <a-input-search
-              ref="aInputSearch"
-              style="width:240px"
-              placeholder={ this.searchPlaceholder }
-              defaultValue={ this.searchInputDefaultValue }
-              on-search={ this.handleSearch }
-            />
-          </div>
-        )
-      }
-    }
-    /**如果不显示默认搜索框 */
-    if (!this.showSearchInput) {
-      scopedSlots.extra = null
-    } else {
-      //默认搜索框的slot被自定义
-      if (this.$slots.extra) {
-        scopedSlots.extra =
-          (typeof this.$slots.extra === 'function' && this.$slots.extra) ||
-          (Object.isObject(this.$slots.extra) && this.$slots.extra.hasOwnProperty('render') && this.$slots.extra.render)
+    const renderNodes = []
+    const gsNode = this.$options.getSlotNode.bind(this)
+    const headerExtraNode = gsNode(this.$slots.headerExtra, h)
+    let scopedSlots = {}
+    this.$slots.headerExtra && (scopedSlots.headerExtra = () => headerExtraNode)
+
+
+    if (!this.useCustomLayout) {
+      const defaultExtraNode = (<div>
+        <a-input-search
+          ref="aInputSearch"
+          style="width:240px"
+          placeholder={ this.searchPlaceholder }
+          defaultValue={ this.searchInputDefaultValue }
+          on-search={ this.handleSearch }
+        />
+      </div>)
+
+      /**如果不显示默认搜索框 */
+      if (!this.showSearchInput) {
+        scopedSlots.extra = null
       } else {
-        const $node = this.renderExtraSlot()
-        $node && (scopedSlots.extra = () => $node)
-      }
-    }
-    const $query = Reflect.apply(this.$options.__buildQuerySlot__, this, [h, c])
-
-    //设置列表属性
-    const infoListProps = {
-      columns: this.columns,
-      source: [...this.dataSource],
-      pageSettings: this.paginationSettings,
-      pagination: this.pagination,
-      rowSelection: this.rowSelection,
-      scroll: this.tableScroll,
-      rowKey: this.rowKey,
-      loading: this.loading,
-      showTotals: false,
-      showHeader: this.showTableHeader,
-      onSorter: this.handleSorter,
-      onPageChange: this.handlePageChange
-
-    }
-
-
-    /**默认模式窗口属性 */
-    const modalProps = Object.assign(
-      {},
-      {
-        class: 'my-modal',
-        visible: this.showModal,
-        afterClose: this.handlerModalClose,
-        maskClosable: false,
-        destroyOnClose: true,
-        confirmLoading: this.confirmLoading,
-        width: this.modalWidth,
-        footer: this.modalFooter
-      },
-      this.defaultModalProps || {}
-    )
-
-    /**模式窗口title的slot */
-    const modalScopedSlots = {
-      title: props => {
-        let arr = [<span>{ this.modalTitle }</span>]
-        this.showModalSecondTitle && arr.push(<span style="margin-left:1em;font-size:12px;color:gray">基础信息</span>)
-        return arr
-      }
-    }
-
-    // 查询区域扩展按钮
-    const extraButton = this.$slots.extraButton
-      ? (typeof this.$slots.extraButton === 'function' && this.$slots.extraButton()) ||
-      (Object.isObject(this.$slots.extraButton) &&
-        this.$slots.extraButton.hasOwnProperty('render') &&
-        h(this.$slots.extraButton))
-      : this.renderExtraButtonSlot()
-
-    const baseView = (
-      <div class={ 'base-view ' + this.baseViewClass }>
-        {this.$slots.beforeQuery
-          ? (typeof this.$slots.beforeQuery === 'function' && this.$slots.beforeQuery()) ||
-          (Object.isObject(this.$slots.beforeQuery) &&
-            this.$slots.extraButton.hasOwnProperty('render') &&
-            h(this.$slots.beforeQuery))
-          : this.renderBeforeQuerySlot() }
-        {
-          this.showAddButton || $query || extraButton ?
-            <a-form class="query-form" form={ this.form }>
-              { $query }
-              <a-row gutter={ 32 } type="flex">
-                { this.showAddButton && (
-                  <a-col span={ 2 }>
-                    <a-button type="primary" loading={ this.addButtonLoading } on-click={ this.handleAdd }>
-                      { this.showAddButtonIcon && <a-icon type={ this.addButtonIconType } /> }
-                      <span>{ this.addButtonText }</span>
-                    </a-button>
-                  </a-col>
-                ) }
-                <a-col span={ 22 }>
-                  { extraButton }
-                </a-col>
-              </a-row>
-            </a-form> : null
+        //默认搜索框的slot被自定义
+        if (!this.$slots.extra) {
+          const $node = this.renderExtraSlot() || defaultExtraNode
+          $node && (scopedSlots.extra = () => $node)
         }
-        {// 列表slot=infoList
-          this.showInfoList &&
-          (this.$slots.infoList ? (
-            (typeof this.$slots.infoList === 'function' && this.$slots.infoList()) ||
-            (Object.isObject(this.$slots.infoList) &&
-              this.$slots.infoList.hasOwnProperty('render') &&
-              h(this.$slots.infoList))
-          ) : (
-              <InfoList { ...{ props: infoListProps } } />
-            )) }
-      </div>
-    )
-    const modalVnode = (
-      <a-modal
-        ref="myBaseModal"
-        { ...{ props: modalProps, scopedSlots: modalScopedSlots } }
-        on-cancel={ this.handlerModalCancel }
-        on-ok={ this.handlerModalOk }
-        on-input={ v => (this.showModal = v) }
-      >
-        {//模式窗口内容slot=modal
-          this.$slots.modal
-            ? (typeof this.$slots.modal === 'function' && this.$slots.modal()) ||
-            (Object.isObject(this.$slots.modal) && this.$slots.modal.hasOwnProperty('render') && h(this.$slots.modal))
-            : this.renderModalSlot() }
-      </a-modal>
-    )
-    const defaultVnode = this.$slots.default
-      ? (typeof this.$slots.default === 'function' && this.$slots.default()) ||
-      (Object.isObject(this.$slots.default) && this.$slots.default.hasOwnProperty('render') && h(this.$slots.default))
-      : this.renderDefaultSlot()
+      }
+      const $query = Reflect.apply(this.$options.__buildQuerySlot__, this, [h, c])
 
-    const re = this.startRenderSlot([baseView, modalVnode, defaultVnode])
+      //设置列表属性
+      const infoListProps = {
+        columns: this.columns,
+        source: [...this.dataSource],
+        pageSettings: this.paginationSettings,
+        pagination: this.pagination,
+        rowSelection: this.rowSelection,
+        scroll: this.tableScroll,
+        rowKey: this.rowKey,
+        loading: this.loading,
+        showTotals: false,
+        showHeader: this.showTableHeader,
+        onSorter: this.handleSorter,
+        onPageChange: this.handlePageChange
+
+      }
+
+
+      /**默认模式窗口属性 */
+      const modalProps = Object.assign(
+        {},
+        {
+          class: 'my-modal',
+          visible: this.showModal,
+          afterClose: this.handlerModalClose,
+          maskClosable: false,
+          destroyOnClose: true,
+          confirmLoading: this.confirmLoading,
+          width: this.modalWidth,
+          footer: this.modalFooter
+        },
+        this.defaultModalProps || {}
+      )
+
+      /**模式窗口title的slot */
+      const modalScopedSlots = {
+        title: props => {
+          let arr = [<span>{ this.modalTitle }</span>]
+          this.showModalSecondTitle && arr.push(<span style="margin-left:1em;font-size:12px;color:gray">基础信息</span>)
+          return arr
+        }
+      }
+
+      // 查询区域扩展按钮
+      const extraButton = (this.$slots.extraButton && gsNode(this.$slots.extraButton, h)) || this.renderExtraButtonSlot()
+
+      const baseView = (
+        <div class={ 'base-view ' + this.baseViewClass }>
+          {(this.$slots.beforeQuery && gsNode(this.$slots.beforeQuery, h)) || this.renderBeforeQuerySlot() }
+          {
+            this.showAddButton || $query || extraButton ?
+              <a-form class="query-form" form={ this.form }>
+                { $query }
+                <a-row gutter={ 32 } type="flex">
+                  { this.showAddButton && (
+                    <a-col span={ 2 }>
+                      <a-button type="primary" loading={ this.addButtonLoading } on-click={ this.handleAdd }>
+                        { this.showAddButtonIcon && <a-icon type={ this.addButtonIconType } /> }
+                        <span>{ this.addButtonText }</span>
+                      </a-button>
+                    </a-col>
+                  ) }
+                  <a-col span={ 22 }>
+                    { extraButton }
+                  </a-col>
+                </a-row>
+              </a-form> : null
+          }
+          {// 列表slot=infoList
+            this.showInfoList &&
+            ((this.$slots.infoList && gsNode(this.$slots.infoList, h)) || (<InfoList { ...{ props: infoListProps } } />)) }
+        </div>
+      )
+      const modalVnode = (
+        <a-modal
+          ref="myBaseModal"
+          { ...{ props: modalProps, scopedSlots: modalScopedSlots } }
+          on-cancel={ this.handlerModalCancel }
+          on-ok={ this.handlerModalOk }
+          on-input={ v => (this.showModal = v) }
+        >
+          {//模式窗口内容slot=modal
+            (this.$slots.modal && gsNode(this.$slots.modal, h)) || this.renderModalSlot() }
+        </a-modal>
+      )
+      Array.prototype.push.apply(renderNodes, [baseView, modalVnode])
+    }
+    const defaultVnode = (this.$slots.default && gsNode(this.$slots.default, h)) || this.renderDefaultSlot()
+
+    renderNodes.push(defaultVnode)
+
+    const re = this.startRenderSlot(renderNodes)
 
     scopedSlots.default = typeof re !== 'function' ? () => [re] : re
 
-    return <Layout { ...{ scopedSlots, props: { showBreadCrumb: this.showBreadCrumb } } } />
+    return <Layout { ...{ scopedSlots, props: { showBreadCrumb: this.showBreadCrumb, useCustomLayout: this.useCustomLayout } } } />
   }
 }

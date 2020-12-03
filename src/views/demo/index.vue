@@ -25,13 +25,17 @@ export default {
       rules: {
         name: [{ validator: validatePass, trigger: 'change' }]
       },
-      validateMessages: 'sdfasdfasdf'
+      validateMessages: 'sdfasdfasdf',
+      useCustomLayout: true
     }
   },
   created () {
     this.$slots = {
       extraButton: {
         render: () => <div>{ this.addButtonText }</div>
+      },
+      headerExtra: {
+        render: <div>asdfasdfasdfasdfasd</div>
       }
     }
     this.showAvatar(false)
@@ -60,6 +64,7 @@ export default {
 
     },
     renderExtraSlot () {
+
       const aa = (infos) => {
         this.$message.info('上传成功')
         console.log({ infos })
@@ -91,8 +96,8 @@ export default {
         model: this.ruleForm,
         rules: this.rules,
         validateMessages: 'oaoaoaoaoaoaoa'
-      }         
-      return <a-form-model { ...{ props} } ref="ruleForm" >
+      }
+      return <a-form-model { ...{ props } } ref="ruleForm" >
         <a-form-model-item label="Password" prop="name" >
           <a-input v-model={ this.ruleForm.name } autocomplete="off" />
         </a-form-model-item>
