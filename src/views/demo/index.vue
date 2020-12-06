@@ -2,7 +2,7 @@
 import baseIndexVueMixins from '@/mixins/base-index-mixins'
 import { mapMutations } from 'vuex'
 import UploadOss from '@/components/uploadoss'
-import { createFetchInstance } from '@/libs/axios/axios'
+import { createFetchInstance } from '@/libs/axios'
 export default {
   extends: baseIndexVueMixins,
   data () {
