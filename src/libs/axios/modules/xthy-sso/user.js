@@ -1,6 +1,4 @@
-import { createFetchInstance } from '@/libs/axios/axios'
-const fetch = createFetchInstance({ baseUrl: '/api/common/xthy-sso/' })
-
+import fetch from './axios'
 
 /**
  * @description 登录接口
