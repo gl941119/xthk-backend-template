@@ -1,7 +1,9 @@
 <template>
   <div class="layout">
     <div :class="headerClass">
-      <bread-crumb v-if="showBreadCrumb"></bread-crumb>
+      <div>
+        <bread-crumb v-if="showBreadCrumb"></bread-crumb>
+      </div>
       <slot name="headerExtra"></slot>
     </div>
     <div :class="layoutInnerClass">
@@ -71,6 +73,7 @@ export default {
   flex-direction: column;
   min-height: 100%;
   height: 100%;
+  min-width: 100%;
   .breadcrumb {
     background-color: #ffffff;
     flex: 1;
@@ -97,6 +100,11 @@ export default {
     flex-direction: row;
     border-bottom: 1px solid #f0f2f5;
     background-color: #ffffff;
+    > :first-child {
+      flex: 1;
+      display: flex;
+      flex-direction: row;
+    }
     .breadcrumb {
       flex: 1;
     }
