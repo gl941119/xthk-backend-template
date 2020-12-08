@@ -4,28 +4,14 @@
     <sider-menu :menus="menus" :defaultOpenKeys="openKeys" :defaultSelectedKeys="selectedMenuKeys" :collapsible="collapsible" @menuSelect="handleMenuSelect"></sider-menu>
     <a-layout-content :class="baseContentClass">
       <div v-if="allowShowGlobalHeadTabs" class="tab-wrap">
-        <head-tabs :items.sync="tabs" :defaultKey="defaultTabKey" @tabSelect="handleTabSelect" @tabRemove="handleTabRemove"></head-tabs>
-        <div class="extend">
-          <span>当前角色：</span>
-          <a @click="changeModalVisible=true">
-            <a-icon type="swap" />
-          </a>
-        </div>
+        <head-tabs :items.sync="tabs" :defaultKey="defaultTabKey" @tabSelect="handleTabSelect" @tabRemove="handleTabRemove"></head-tabs>      
       </div>
       <div class="info-content">
         <keep-alive>
           <router-view v-if="this.$route.meta && this.$route.meta.keepAlive"></router-view>
         </keep-alive>
         <router-view v-if="!this.$route.meta || !this.$route.meta.keepAlive"></router-view>
-      </div>
-      <a-modal v-model="changeModalVisible" :maskClosable="false" title="切换角色" wrapClassName="change-role-modal" width="480px">
-        <div class="inner-wrap">
-          <span>当前角色：</span>
-          <a-select style="width:224px;">
-            <a-select-option key="1" value="1">这是一个角色</a-select-option>
-          </a-select>
-        </div>
-      </a-modal>
+      </div>  
     </a-layout-content>
   </a-layout>
 </template>
@@ -52,8 +38,7 @@ export default {
       defaultTabKey: '1',
       ...mapActions(['generateMenus']),
       tabs: [],
-      menus: [],
-      changeModalVisible: false
+      menus: []   
     }
   },
   computed: {
@@ -235,20 +220,7 @@ export default {
       }
       > :first-child {
         flex: 1;
-      }
-      > .extend {
-        flex: 0 auto;
-        display: flex;
-        align-items: center;
-        padding: 0 26px 0;
-        font-size: 14px;
-        span + a {
-          margin-left: 1em;
-        }
-        i {
-          font-size: 14px;
-        }
-      }
+      }    
     }
     .info-content {
       flex: 1 auto;
