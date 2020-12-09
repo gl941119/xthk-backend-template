@@ -157,6 +157,7 @@ export default {
             p = p.parentMenu
           }
           this.selectedMenuKeys = [menu.name]
+          !this.openKeys.length && (this.openKeys.push(menu.name))
           // menu.parent && this.openKeys.push(menu.parent)
           if (this.$route.name !== currentMenu.name && !preRoute) this.$router.push({ name: currentMenu.name })
           this.addTab({ name: menu.name, title: menu.meta.title })
