@@ -30,13 +30,11 @@ export default {
         }
         temp.push({ ...n })
       })
-      console.log({ temp })
-      info = temp.map(({ name, meta: { title: breadcrumbName } = { title: '' }, components }) => {
-        return {
-          breadcrumbName,
-          name
-        }
-      })
+      info = temp.reduce((p, { name, meta: { title: breadcrumbName } = { title: '' }, components }) => {
+        const info = { breadcrumbName, name }
+        !p.some(m => JSON.stringify(m) === JSON.stringify(info)) && p.push(info)
+        return p
+      }, [])
       return info
     }
   },
