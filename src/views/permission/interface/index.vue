@@ -6,6 +6,7 @@ import {
   rbacPermissionsToggleEnable,
   rbacPermissionsScanapi
 } from '_axios/permission'
+const IS_SUCCESS = 1
 export default {
   name: 'PermissionInterface',
   mixins: [baseIndexMixins],
@@ -35,7 +36,7 @@ export default {
               <a-switch
                 checkedChildren="开"
                 unCheckedChildren="关"
-                checked={record.status === 1}
+                checked={~~record.status === IS_SUCCESS}
                 onChange={checked => this.handleStateChange(text, record, dataIndex, checked)}
               />
             )
@@ -50,7 +51,7 @@ export default {
               <a-switch
                 checkedChildren="启用"
                 unCheckedChildren="禁用"
-                checked={record.is_white === 1}
+                checked={~~record.is_white === IS_SUCCESS}
                 onChange={checked => this.handleWhiteChange(text, record, dataIndex, checked)}
               />
             )
