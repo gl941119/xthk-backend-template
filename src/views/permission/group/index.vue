@@ -8,6 +8,9 @@ import {
   rbacGroupUpdatePermissions,
   getRbacGroupMenuPermissions
 } from '_axios/permission'
+
+const IS_SUCCESS = 1
+
 export default {
   name: 'PermissionGroup',
   mixins: [baseIndexMixins],
@@ -122,12 +125,12 @@ export default {
                   children: newChildren,
                   parents: !isKen ? p1 : null,
                 }
-                if (Number.isInteger(key)) {
+                if ( /^\d+$/.test(key)) {
                   key = [...p1, key].join('.')
                   o.key = key
                   _map.set(key, o)
                 }
-                if (is_active === 1) {
+                if (~~is_active === IS_SUCCESS) {
                   set.add(key)
                 }
                 return o
@@ -298,7 +301,7 @@ export default {
           let r = !('' + m).startsWith('m_')
           if (r) {
             let o = this._cacheMap.get(n)
-            if (o.parents) {
+            if (o?.parents) {
               let k = o.parents[0]
               if (!temp.has(k)) {
                 temp.set(k, {})
