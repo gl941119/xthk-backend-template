@@ -301,7 +301,7 @@ export default {
           let r = !('' + m).startsWith('m_')
           if (r) {
             let o = this._cacheMap.get(n)
-            if (o.parents) {
+            if (o?.parents) {
               let k = o.parents[0]
               if (!temp.has(k)) {
                 temp.set(k, {})
