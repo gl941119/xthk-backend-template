@@ -11,10 +11,12 @@ import {
   rbacMenuUpdatePermissions
 } from '_axios/permission'
 
+const IS_SUCCESS = 1
+
 export default {
   name: 'PermissionMenu',
   mixins: [baseIndexMixins],
-  data() {
+  data () {
     return {
       modalTitle: '配置菜单权限',
       title: '菜单配置',
@@ -43,8 +45,8 @@ export default {
               <a-switch
                 checkedChildren="启用"
                 unCheckedChildren="禁用"
-                checked={record.status === 1}
-                onChange={checked => this.handleStateChange(text, record, dataIndex, checked)}
+                checked={ ~~record.status === IS_SUCCESS }
+                onChange={ checked => this.handleStateChange(text, record, dataIndex, checked) }
               />
             )
           }
@@ -57,8 +59,8 @@ export default {
             return (
               <a
                 href="javascript:void(0);"
-                disabled={record.level_name === '一级菜单'}
-                onClick={() => this.handleConfigMenu(text, record, dataIndex)}
+                disabled={ record.level_name === '一级菜单' }
+                onClick={ () => this.handleConfigMenu(text, record, dataIndex) }
               >
                 配置权限
               </a>
@@ -77,41 +79,35 @@ export default {
       selectedKeys: []
     }
   },
-  created() {
-    this.__init_render_slots__()
+  created () {
+
     Object.assign(this.query, { meta_title: '' })
 
     /**设置获得列表信息调用接口*/
     this.api.getInfoList = getRbacMenuList
   },
   methods: {
-    /**设置页面插槽 */
-    __init_render_slots__() {
-      this.$slots = {
-        /**默认modal弹出窗内容 */
-        modal: props => {
-          return (
-            <div>
-              <div style="margin:0 auto;width:710px">
-                <a-transfer
-                  listStyle={this.listStyle}
-                  dataSource={this.allTreeDataSource}
-                  titles={['接口列表', '已添加接口列表']}
-                  operations={['添加', '移出']}
-                  showSearch={true}
-                  targetKeys={this.targetKeys}
-                  selectedKeys={this.selectedKeys}
-                  render={item => item.title}
-                  on-selectChange={this.selectChange}
-                  on-change={this.handleChange}
-                />
-              </div>
-            </div>
-          )
-        }
-      }
+    renderModalSlot () {
+      return (
+        <div>
+          <div style="margin:0 auto;width:710px">
+            <a-transfer
+              listStyle={ this.listStyle }
+              dataSource={ this.allTreeDataSource }
+              titles={ ['接口列表', '已添加接口列表'] }
+              operations={ ['添加', '移出'] }
+              showSearch={ true }
+              targetKeys={ this.targetKeys }
+              selectedKeys={ this.selectedKeys }
+              render={ item => item.title }
+              on-selectChange={ this.selectChange }
+              on-change={ this.handleChange }
+            />
+          </div>
+        </div>
+      )
     },
-    __filter_route__(routers) {
+    __filter_route__ (routers) {
       return routers.filter(m => {
         if (!m.meta || m.meta.showMenu !== false) {
           if (m.children) {
@@ -124,7 +120,7 @@ export default {
       })
     },
     /**添加按钮事件。*/
-    handleAdd() {
+    handleAdd () {
       this.$confirm({
         title: '警告',
         content: (
@@ -150,12 +146,12 @@ export default {
       })
     },
     /**重写默认框查询事件 */
-    handleSearch: debounce(function(value) {
+    handleSearch: debounce(function (value) {
       this.query.meta_title = value
       this.getInfoList(1)
     }),
     /**启用状态事件 */
-    async handleStateChange(text, record, dataIndex, checked) {
+    async handleStateChange (text, record, dataIndex, checked) {
       let oldstatus = record.status
       record.status = oldstatus ? 0 : 1
 
@@ -170,7 +166,7 @@ export default {
         })
     },
     /**白名单事件 */
-    async handleWhiteChange(text, record, dataIndex, checked) {
+    async handleWhiteChange (text, record, dataIndex, checked) {
       await rbacPermissionsWhite({ id: record.id })
         .then(({ status_code, message, data: { status } }) => {
           this.$message.success(message)
@@ -180,12 +176,12 @@ export default {
         })
     },
     /**配置菜单 */
-    async handleConfigMenu(text, record, dataIndex) {
+    async handleConfigMenu (text, record, dataIndex) {
       if (this.isConfigMenu) return
       this.isConfigMenu = true
       this.currentInfo = { ...record }
-      let r = getRbacMenuAllPermissions({ menu_id: record.id })
-      let r1 = getRbacMenuPermissions({ menu_id: record.id })
+      let r = getRbacMenuAllPermissions({ menu_id: record.id })  // 当前菜单能够拥有的所有接口权限
+      let r1 = getRbacMenuPermissions({ menu_id: record.id }) // 当前菜单已选中的接口权限
       await Promise.all([r, r1])
         .then(([{ status_code, message, data }, { status_code: status_code_1, message: message1, data: data1 }]) => {
           let arr = data.map(({ id: key, name: title }) => {
@@ -205,7 +201,7 @@ export default {
       this.showModal = true
       this.isConfigMenu = false
     },
-    async onModalOk(values) {
+    async onModalOk (values) {
       let r = false
       if (!this.targetKeys || !this.targetKeys.length) {
         this.$message.warning('没有选中的接口信息')
@@ -225,10 +221,10 @@ export default {
         })
       return r
     },
-    handleChange(targetKeys, direction, moveKeys) {
+    handleChange (targetKeys, direction, moveKeys) {
       this.targetKeys = targetKeys
     },
-    selectChange(sourceSelectedKeys, targetSelectedKeys) {
+    selectChange (sourceSelectedKeys, targetSelectedKeys) {
       this.selectedKeys = [...sourceSelectedKeys, ...targetSelectedKeys]
     }
   }
