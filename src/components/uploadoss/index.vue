@@ -201,13 +201,14 @@ export default {
     /** 
      * 获得AliyOss上传的鉴权信息
      */
-    [GET_ALI_UPLOAD_OSS] ({ Credentials: { AccessKeySecret, AccessKeyId, Expiration, SecurityToken }, bucket, endpoint }) {
+    [GET_ALI_UPLOAD_OSS] ({ Credentials: { AccessKeySecret, AccessKeyId, Expiration, SecurityToken }, bucket, endpoint, cname }) {
       const client = new OSS({
         accessKeyId: AccessKeyId,
         accessKeySecret: AccessKeySecret,
         stsToken: SecurityToken,
         bucket: bucket,
-        endpoint: endpoint
+        endpoint: endpoint,
+        cname
       })
       this.uploader = client
       return {
