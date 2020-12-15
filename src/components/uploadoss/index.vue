@@ -202,7 +202,11 @@ export default {
         for (let file of this.uploadList) {
           try {
             const newFile = await this[OSS_LINEAR_UPLOAD](client, path, file)
-            this.uploadSuccess && this.uploadSuccess(newFile, file)
+            try {
+              this.uploadSuccess && this.uploadSuccess(newFile, file)
+            } catch (error) {
+              console.error(error)
+            }
           } catch (error) {
             this.uploadFail && this.uploadFail(error, file)
             this.failedList.push(file)
@@ -215,7 +219,6 @@ export default {
         this.$message.error('上传失败')
         this.uploadFail && this.uploadFail(error)
         this.failedList = [...this.uploadList]
-        // console.log({ error })
       } finally {
         this.uploading = false
         this.uploader = null
@@ -256,7 +259,11 @@ export default {
         }
       })
       const newFile = { uid, name, lastModified, size, lastModifiedDate, type, relativeUrl: `${path}${relativeUrl}`, file }
-      this.afterUpload && this.afterUpload(newFile)
+      try {
+        this.afterUpload && this.afterUpload(newFile)
+      } catch (err) {
+        console.error(err)
+      }
       return newFile
     },
     /** 
