@@ -59,6 +59,15 @@ export default {
       type: Number,
       default: 10
     },
+    /** 
+     * 是否允许失败后重传，
+     * 默认false,为true时失败后不会清空失败的文件，可通过upload方法再次上传
+     * 如果没有再次上传，就开始重新选择文件后，上一次的失败文件将会被清空重置 
+     * */
+    allowFailedUploadAgain: {
+      type: Boolean,
+      default: false
+    },
     /**
      * 1.收的文件类型，默认jpge,png,jpg,svg,gif
      * 2.vod模式下该类型无效
@@ -101,6 +110,7 @@ export default {
       type: [Function, null],
       default: null
     },
+    /** 上传进度回调 */
     uploadProgress: {
       type: [Function, null],
       default: null
@@ -114,7 +124,8 @@ export default {
       uploading: false,
       currentAccept: '',
       /** 当前ali上传对象 */
-      uploader: null
+      uploader: null,
+      failedList: []
     }
   },
   watch: {
@@ -137,9 +148,16 @@ export default {
       this.uploading = false
       this.stsToken = null
       this.uploader = null
+      this.failedList.length = 0
     },
-    /** 开始上传(标准上传接口) */
+    /** 
+     * 开始上传(标准上传接口)
+     * allowFailedUploadAgain=true时，该方法可以进错误重传 
+     * */
     upload () {
+      if (!this.uploadList.length && this.failedList.length) {
+        this.uploadList = [...this.failedList]
+      }
       return this.aliUpload()
     },
     /** 开始上传 */
@@ -179,20 +197,28 @@ export default {
 
       const { client, path } = this[GET_ALI_UPLOAD_OSS](this.stsToken)
       try {
+
+        this.failedList = []
         for (let file of this.uploadList) {
           try {
             const newFile = await this[OSS_LINEAR_UPLOAD](client, path, file)
-            this.uploadSuccess && this.uploadSuccess(newFile, file)
+            try {
+              this.uploadSuccess && this.uploadSuccess(newFile, file)
+            } catch (error) {
+              console.error(error)
+            }
           } catch (error) {
             this.uploadFail && this.uploadFail(error, file)
+            this.failedList.push(file)
           }
         }
         this.uploadEnd && this.uploadEnd(this.uploadList, this.fileList)
         this.uploadList.length = 0
+
       } catch (error) {
         this.$message.error('上传失败')
         this.uploadFail && this.uploadFail(error)
-        // console.log({ error })
+        this.failedList = [...this.uploadList]
       } finally {
         this.uploading = false
         this.uploader = null
@@ -229,10 +255,15 @@ export default {
          */
         progress: (p, checkpoint) => {
           this.uploadProgress && this.uploadProgress(p, file)
+          // this.uploader.cancel()
         }
       })
-      const newFile = { uid, name, lastModified, size, lastModifiedDate, type, relativeUrl: `${path}${relativeUrl}` }
-      this.afterUpload && this.afterUpload(newFile)
+      const newFile = { uid, name, lastModified, size, lastModifiedDate, type, relativeUrl: `${path}${relativeUrl}`, file }
+      try {
+        this.afterUpload && this.afterUpload(newFile)
+      } catch (err) {
+        console.error(err)
+      }
       return newFile
     },
     /** 
@@ -275,6 +306,7 @@ export default {
         'onUploadFailed': (uploadInfo, code, message) => {
           const { file } = uploadInfo
           this.uploadFail && this.uploadFail(new Error(message), file, code)
+          this.failedList.push(file)
         },
         // 文件上传进度，单位：字节
         'onUploadProgress': (uploadInfo, totalSize, loadedPercent) => {
@@ -306,6 +338,7 @@ export default {
       }
       const len = fileList.length
       if (!len) return
+      this.failedList.length && (this.failedList.length = 0)
       this.uploadList.push(file)
       if (fileList.findIndex(f => f.uid === file.uid) === len - 1) { // 当前为选中的最后一个文件时
         this.change && this.change(this.uploadList)
