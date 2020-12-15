@@ -214,6 +214,7 @@ export default {
       } catch (error) {
         this.$message.error('上传失败')
         this.uploadFail && this.uploadFail(error)
+        this.failedList = [...this.uploadList]
         // console.log({ error })
       } finally {
         this.uploading = false
