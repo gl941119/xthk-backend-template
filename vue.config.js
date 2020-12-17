@@ -9,6 +9,15 @@ const resolve = dir => {
 }
 const webpack = require('webpack')
 
+let proxyTarget = process.env.PROXY_ENV
+
+if (/^\d+$/.test(proxyTarget)) {
+  proxyTarget = `https://xthk_${process.env.PROXY_ENV || 1}.dev.xthktech.cn`
+} else if (!/^http(s)?:\/\//.test(proxyTarget)) {
+  proxyTarget = ''
+}
+
+
 module.exports = {
   /** 区分打包环境与开发环境
    * process.env.NODE_ENV==='production'  (打包环境)
