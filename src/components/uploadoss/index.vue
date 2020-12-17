@@ -297,8 +297,8 @@ export default {
         },
         // 文件上传成功
         'onUploadSucceed': (uploadInfo) => {
-          const { file } = uploadInfo
-          const newFile = { ...file }
+          const { file, videoId } = uploadInfo
+          const newFile = { ...file, videoId }
           this.fileList.push(newFile)
           this.uploadSuccess && this.uploadSuccess(newFile)
         },
