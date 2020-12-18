@@ -1,16 +1,8 @@
 <template>
-  <div class="editor">
+  <div :class="baseClass" :currentLength="currentLength">
     <!-- 图片上传组件辅助-->
-    <upload-oss :afterUpload="afterUpload" :getStsToken="getStsToken"></upload-oss>
-    <quill-editor
-      ref="myQuillEditor"
-      v-model="content"
-      class="editor"
-      :options="editorOption"
-      @blur="onEditorBlur($event)"
-      @focus="onEditorFocus($event)"
-      @change="onEditorChange($event)"
-    ></quill-editor>
+    <upload-oss ref="myUploadOss" :afterUpload="afterUpload" :getStsToken="getStsToken"></upload-oss>
+    <quill-editor ref="myQuillEditor" v-model="content" class="editor" :options="editorOption" @blur="onEditorBlur($event)" @focus="onEditorFocus($event)" @change="onEditorChange($event)"></quill-editor>
     <!-- <div>{{limitText}}/{{pureText.length}}</div> -->
   </div>
 </template>
@@ -39,7 +31,7 @@ const toolbarOptions = [
   ['clean'], // 清除文本格式
   ['link', 'image'] // 链接、图片、视频, "video"
 ]
-
+const div = document.createElement('div')
 export default {
   name: 'RichEditor',
   props: {
@@ -72,40 +64,73 @@ export default {
     isUploadPic: {
       type: [Boolean],
       default: true
+    },
+    /** 自定义工具栏选项。（选项内容。可参考quill组件帮助） */
+    defaultToolbarOptions: {
+      type: [Array, null],
+      default: null
+    },
+    /** 自定义图片选择事件处理 */
+    customChoiceImageHandle: {
+      type: [Function, null],
+      default: null
+    },
+    /** 显示字数提示 */
+    showCountTips: {
+      type: Boolean,
+      default: false
     }
+
   },
   components: {
     quillEditor,
     UploadOss
   },
   watch: {
-    value(val) {
+    value (val) {
       this.content = val || ''
     }
   },
-  created() {
+  created () {
     this.editorOption.placeholder = this.placeholder
   },
-  mounted() {
+  mounted () {
     this.content = this.value
     console.log('myQuillEditor', this.$refs.myQuillEditor)
     this.$refs.myQuillEditor.quill.container.style.height = this.editorHeight.height
   },
   computed: {
-    editorHeight() {
+    editorHeight () {
       return {
         height: this.height + 'px'
       }
     },
-    limitText() {
+    limitText () {
       return this.content.length < 8 ? 0 : this.content.length - 7
+    },
+    baseClass () {
+
+      return {
+        editor: true,
+        'show-count-tips': this.maxLength && this.showCountTips
+      }
+    },
+    currentLength () {
+      return `${this.cLength}/${this.maxLength}`
     }
   },
-  data() {
-    const opts = [...toolbarOptions]
-    if (!this.isUploadPic) {
-      opts[opts.length - 1] = ['link']
+  data () {
+    const self = this
+    let opts
+    if (!this.defaultToolbarOptions) {
+      opts = [...toolbarOptions]
+      if (!this.isUploadPic) {
+        opts[opts.length - 1] = ['link']
+      }
+    } else {
+      opts = this.defaultToolbarOptions
     }
+
     return {
       content: '',
       quillUpdateImg: false, // 根据图片上传状态来确定是否显示loading动画，刚开始是false,不显示
@@ -116,10 +141,14 @@ export default {
           toolbar: {
             container: opts,
             handlers: {
-              image: function(value) {
+              image: function (value) {
                 if (value) {
-                  // 触发input框选择图片文件
-                  document.querySelector('.editor .avatar-uploader input').click()
+                  if (self.customChoiceImageHandle) {
+                    self.customChoiceImageHandle(this.quill)
+                  } else {
+                    // 触发input框选择图片文件
+                    self.$refs.myUploadOss.$el.querySelector('.ant-upload input').click()
+                  }
                 } else {
                   this.quill.format('image', false)
                 }
@@ -133,42 +162,51 @@ export default {
       }, // 有的图片服务器要求请求头需要有token
       info: {},
       file: null,
-      pureText: ''
+      pureText: '',
+      cLength: 0
     }
   },
   methods: {
-    afterUpload(resp) {
-      let a = resp.res.requestUrls[0].split('?')
-      // res为图片服务器返回的数据
-      // 获取富文本组件实例
+    /** quill文本框，在当前位置插入图片 */
+    quillInsetImage (imgUrl) {
       let quill = this.$refs.myQuillEditor.quill
       // 如果上传成功
 
       // 获取光标所在位置
-      let length = quill.getSelection().index
+      let length = quill.getSelection()?.index ?? 0
       // 插入图片  res.url为服务器返回的图片地址
-      quill.insertEmbed(length, 'image', a[0])
+      quill.insertEmbed(length, 'image', imgUrl)
       // 调整光标到最后
       quill.setSelection(length + 1)
+    },
+    afterUpload (resp) {
+      let url = resp.relativeUrl
+      // res为图片服务器返回的数据
+      this.quillInsetImage(url)
       // loading动画消失
       this.quillUpdateImg = false
     },
-    onEditorBlur() {
+    onEditorBlur () {
       //失去焦点事件
     },
-    onEditorFocus() {
+    onEditorFocus () {
       //获得焦点事件
     },
-    onEditorChange(val) {
-      let ml = Math.abs(this.maxLength)
+    onEditorChange (val) {
+      const ml = Math.abs(this.maxLength)
+      const cLen = val.quill.getLength() - 1
+      val.quill.deleteText(ml, 5)
 
-      let txt = val.text.replace(/[\r\n]/, '')
+      if (this.content === '') {
+        this.cLength = 0
+      } else {
+        this.cLength = val.quill.getLength() - 1
+      }
 
-      if (ml && txt.length > ml) {
-        val.quill.deleteText(ml, 5)
 
+      if (ml && cLen > ml && !this.showCountTips) {
         if (this.onEditorChange.timer) {
-          console.count('防抖')
+          // console.count('防抖')
           clearTimeout(this.onEditorChange.timer)
           this.onEditorChange.timer = null
         }
@@ -181,7 +219,7 @@ export default {
       this.$emit('on-change', this.content)
       this.triggerChange(this.content)
     },
-    triggerChange(changeValue) {
+    triggerChange (changeValue) {
       this.$emit('change', changeValue)
     }
   }
@@ -190,8 +228,43 @@ export default {
 
 <style lang="scss">
 .editor {
+  position: relative;
   line-height: normal !important;
   width: 100%;
+
+  .limit {
+    position: absolute;
+    right: 6px;
+    font-size: 12px;
+    font-family: PingFangSC-Regular;
+    line-height: 22px;
+    color: rgba(153, 153, 153, 1);
+  }
+  &.show-count-tips {
+    padding-bottom: 25px;
+    border: 1px solid #dfe6ec;
+    border-top: 0 none;
+    &::after {
+      position: absolute;
+      bottom: 5px;
+      right: 12px;
+      content: attr(currentLength);
+      font-size: 14px;
+      font-family: PingFangSC-Regular, PingFang SC;
+      font-weight: 400;
+      color: #c0c3c9;
+      line-height: 22px;
+    }
+    .quill-editor {
+      > div {
+        border-left: 0 none;
+        border-right: 0 none;
+      }
+      .ql-container {
+        border-bottom: 0 none;
+      }
+    }
+  }
 }
 .ql-snow .ql-tooltip[data-mode='link']::before {
   content: '请输入链接地址:';
@@ -265,16 +338,5 @@ export default {
 .ql-snow .ql-picker.ql-font .ql-picker-label[data-value='monospace']::before,
 .ql-snow .ql-picker.ql-font .ql-picker-item[data-value='monospace']::before {
   content: '等宽字体';
-}
-.editor {
-  position: relative;
-  .limit {
-    position: absolute;
-    right: 6px;
-    font-size: 12px;
-    font-family: PingFangSC-Regular;
-    line-height: 22px;
-    color: rgba(153, 153, 153, 1);
-  }
 }
 </style>
