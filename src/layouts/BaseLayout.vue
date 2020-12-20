@@ -4,14 +4,14 @@
     <sider-menu :menus="menus" :defaultOpenKeys="openKeys" :defaultSelectedKeys="selectedMenuKeys" :collapsible="collapsible" @menuSelect="handleMenuSelect"></sider-menu>
     <a-layout-content :class="baseContentClass">
       <div v-if="allowShowGlobalHeadTabs" class="tab-wrap">
-        <head-tabs :items.sync="tabs" :defaultKey="defaultTabKey" @tabSelect="handleTabSelect" @tabRemove="handleTabRemove"></head-tabs>      
+        <head-tabs :items.sync="tabs" :defaultKey="defaultTabKey" @tabSelect="handleTabSelect" @tabRemove="handleTabRemove"></head-tabs>
       </div>
       <div class="info-content">
         <keep-alive>
           <router-view v-if="this.$route.meta && this.$route.meta.keepAlive"></router-view>
         </keep-alive>
         <router-view v-if="!this.$route.meta || !this.$route.meta.keepAlive"></router-view>
-      </div>  
+      </div>
     </a-layout-content>
   </a-layout>
 </template>
@@ -38,7 +38,7 @@ export default {
       defaultTabKey: '1',
       ...mapActions(['generateMenus']),
       tabs: [],
-      menus: []   
+      menus: []
     }
   },
   computed: {
@@ -187,11 +187,12 @@ export default {
         name,
         meta: { title = '' }
       } = menu
-
-      if (!this.tabs.find(m => m.key === name)) {
-        this.addTab({ name, title })
-      } else {
-        this.defaultTabKey = name
+      if (this.allowShowGlobalHeadTabs) {
+        if (!this.tabs.find(m => m.key === name)) {
+          this.addTab({ name, title })
+        } else {
+          this.defaultTabKey = name
+        }
       }
       this.$router.push({ name })
     }
@@ -221,7 +222,7 @@ export default {
       }
       > :first-child {
         flex: 1;
-      }    
+      }
     }
     .info-content {
       flex: 1 auto;
