@@ -154,7 +154,6 @@ export default {
                 if (value) {
                   self.selectionIndex = this.quill.getSelection()?.index ?? 0
                   if (self.customChoiceImageHandle) {
-                    console.log('xxxx', self.selectionIndex)
                     self.customChoiceImageHandle(this.quill)
                   } else {
                     // 触发input框选择图片文件
