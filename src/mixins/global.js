@@ -50,25 +50,31 @@ Vue.mixin({
       // 在不在显示顶部导航栏的情况下，非同一模块路由下的路由切换清除相关keepAlive数据
       if (!allowShowGlobalHeadTabs && to.matched[1]?.name !== from.matched[1]?.name) {
         try {
-          if (cacheList) {
-            for (const c in cacheList) {
-              Reflect.deleteProperty(cacheList, c)
-            }
-            cacheList = null
-          }
           const $vnode = vm.$vnode
+
           if (($vnode && $vnode.data.keepAlive) &&
             ($vnode?.parent?.componentInstance?.cache) &&
             ($vnode.key || $vnode.componentOptions)
           ) {
-            var cache = $vnode.parent.componentInstance.cache
-            cacheList = cache
+            let cache = $vnode.parent.componentInstance.cache
+            !cacheList && (cacheList = cache)
           }
+
         } catch (err) {
           console.error(err)
         }
       }
     })
+  },
+  beforeRouteLeave (to, from, next) {
+    if (!allowShowGlobalHeadTabs && to.matched[1]?.name !== from.matched[1]?.name) {
+      for (let c in cacheList) {
+        cacheList[c] = undefined
+        Reflect.deleteProperty(cacheList, c)
+      }
+    }
+    next()
+
   },
   computed: {
     ...mapGetters({
