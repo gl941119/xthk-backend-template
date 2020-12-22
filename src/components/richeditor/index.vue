@@ -95,9 +95,18 @@ export default {
     this.editorOption.placeholder = this.placeholder
   },
   mounted () {
+    const { quill } = this.$refs.myQuillEditor
+    quill.enable(false)
     this.content = this.value
-    console.log('myQuillEditor', this.$refs.myQuillEditor)
-    this.$refs.myQuillEditor.quill.container.style.height = this.editorHeight.height
+
+    quill.container.style.height = this.editorHeight.height
+    this.$nextTick(() => {
+      quill.blur()
+      setTimeout(() => {
+        quill.enable(true)
+      }, 400)
+
+    })
   },
   computed: {
     editorHeight () {
@@ -143,13 +152,16 @@ export default {
             handlers: {
               image: function (value) {
                 if (value) {
+                  self.selectionIndex = this.quill.getSelection()?.index ?? 0
                   if (self.customChoiceImageHandle) {
+                    console.log('xxxx', self.selectionIndex)
                     self.customChoiceImageHandle(this.quill)
                   } else {
                     // 触发input框选择图片文件
                     self.$refs.myUploadOss.$el.querySelector('.ant-upload input').click()
                   }
                 } else {
+
                   this.quill.format('image', false)
                 }
               }
@@ -163,7 +175,8 @@ export default {
       info: {},
       file: null,
       pureText: '',
-      cLength: 0
+      cLength: 0,
+      selectionIndex: 0
     }
   },
   methods: {
@@ -171,9 +184,8 @@ export default {
     quillInsetImage (imgUrl) {
       let quill = this.$refs.myQuillEditor.quill
       // 如果上传成功
-
       // 获取光标所在位置
-      let length = quill.getSelection()?.index ?? 0
+      let length = this.selectionIndex ?? quill.getSelection()?.index ?? 0
       // 插入图片  res.url为服务器返回的图片地址
       quill.insertEmbed(length, 'image', imgUrl)
       // 调整光标到最后
