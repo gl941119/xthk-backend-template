@@ -114,9 +114,9 @@ export default {
       if (page) {
         this.query.page = page
       }
-      const before = this.onBeforeGetInfoList
-      if (before && before() === false) return
-      let q = { ...this.query }
+      const r = this.onBeforeGetInfoList?.()
+      if (r === false) return
+      let q = { ...(Object.isObject(r) ? r : this.query) }
       fun(q)
         .then(({ message, status_code, data }) => {
           this.loading = false
