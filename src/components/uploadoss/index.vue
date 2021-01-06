@@ -195,13 +195,13 @@ export default {
     async [NORMAL_UPLOAD] () {
       this.stsToken = await this.getStsToken().then(({ data }) => data)
 
-      const { client, path } = this[GET_ALI_UPLOAD_OSS](this.stsToken)
+      const { client, path, storePath } = this[GET_ALI_UPLOAD_OSS](this.stsToken)
       try {
 
         this.failedList = []
         for (let file of this.uploadList) {
           try {
-            const newFile = await this[OSS_LINEAR_UPLOAD](client, path, file)
+            const newFile = await this[OSS_LINEAR_UPLOAD](client, path, file, storePath)
             try {
               this.uploadSuccess && this.uploadSuccess(newFile, file)
             } catch (error) {
@@ -227,7 +227,7 @@ export default {
     /** 
      * 获得AliyOss上传的鉴权信息
      */
-    [GET_ALI_UPLOAD_OSS] ({ Credentials: { AccessKeySecret, AccessKeyId, Expiration, SecurityToken }, bucket, endpoint, cname }) {
+    [GET_ALI_UPLOAD_OSS] ({ Credentials: { AccessKeySecret, AccessKeyId, Expiration, SecurityToken }, bucket, endpoint, cname, StorePath }) {
       const client = new OSS({
         accessKeyId: AccessKeyId,
         accessKeySecret: AccessKeySecret,
@@ -239,14 +239,20 @@ export default {
       this.uploader = client
       return {
         client,
-        path: `https://${bucket}.${endpoint}/`
+        path: `https://${bucket}.${endpoint}/`,
+        storePath: StorePath
       }
     },
     // 标准类型的串行上传
-    async [OSS_LINEAR_UPLOAD] (client, path, file) {
+    async [OSS_LINEAR_UPLOAD] (client, path, file, storePath) {
+      if (storePath) {
+        !storePath.endsWith('/') && (storePath += '/')
+      } else {
+        storePath = ''
+      }
       const { name, lastModified, size, lastModifiedDate, type, uid } = file
       const fileName = uid || `${new Date().getTime()}`
-      const relativeUrl = `${uid}_${name || 'file.png'}`
+      const relativeUrl = `${storePath}${uid}_${name || 'file.png'}`
       await client.multipartUpload(relativeUrl, file, {
         /** 
          * 上传进度回调
