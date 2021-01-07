@@ -73,14 +73,14 @@ export default {
     onPageChange: {
       type: Function,
       default: () => {
-        return () => {}
+        return () => { }
       }
     },
     /**排序回调方法 */
     onSorter: {
       type: Function,
       default: () => {
-        return () => {}
+        return () => { }
       }
     },
     rowSelection: {
@@ -98,7 +98,7 @@ export default {
       default: true
     }
   },
-  data() {
+  data () {
     return {
       currentPageSettings: null,
       currentSorted: {},
@@ -109,7 +109,7 @@ export default {
     }
   },
   watch: {
-    pagination(c, o) {
+    pagination (c, o) {
       if (c != null) {
         let t = this.$refs.aTable
         let p = t.$children[0].sPagination
@@ -118,11 +118,11 @@ export default {
           this.currentPageSettings && (this.currentPageSettings.total = this.pageSettings.total)
         }
 
-        if (c.current_page > c.last_page) {
+        if (c.total_pages && (c.current_page > c.last_page || c.current_page > c.total_pages)) {
           this.pageChange(
             {
               pageSize: c.per_page,
-              current: c.last_page
+              current: c.last_page ?? c.total_pages
             },
             {},
             {}
@@ -137,7 +137,7 @@ export default {
         Object.assign(this.currentPage, p)
       }
     },
-    pageSettings(c) {
+    pageSettings (c) {
       if (typeof c === 'undefined') {
         this.currentPageSettings = defaultPageSetting()
       } else {
@@ -145,14 +145,14 @@ export default {
       }
     }
   },
-  created() {
+  created () {
     this.currentPageSettings = this.pageSettings === undefined ? defaultPageSetting() : this.pageSettings
   },
   methods: {
-    rowClassName() {
+    rowClassName () {
       return 'infolist-row'
     },
-    pageChange(pagination, filters, sorter) {
+    pageChange (pagination, filters, sorter) {
       if (this.currentPage.pageSize !== pagination.pageSize || this.currentPage.current !== pagination.current) {
         this.$emit('pageChange', pagination)
         this.onPageChange(pagination)
