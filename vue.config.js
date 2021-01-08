@@ -116,7 +116,7 @@ module.exports = {
     hotOnly: false,
     proxy: {
       '/api': {
-        target: `https://xthk_${process.env.PROXY_ENV || 1}.dev.xthktech.cn`
+        target: proxyTarget
       }
     }
   },
