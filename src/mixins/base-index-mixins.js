@@ -149,6 +149,8 @@ export default {
     onBeforeGetInfoList () { },
     /**在绑定数据之前调用方法。可返回新的数据对象 */
     onBeforeBindInfoList (source) { },
+    /**在绑定数据之后调用方法 */
+    onAfterBindInfoList (source) { },
     /**
      * 保存数据之前调用方法
      * @param {Object} values 相关表单值
