@@ -14,7 +14,7 @@ const IS_SUCCESS = 1
 export default {
   name: 'PermissionGroup',
   mixins: [baseIndexMixins],
-  data() {
+  data () {
     return {
       modalTitle: '配置权限',
       searchPlaceholder: '请输入权限组名称',
@@ -39,25 +39,25 @@ export default {
               <span>
                 <a
                   href="javascript:;"
-                  onClick={() => this.handleOperate(text, record, dataIndex, 'config')}
-                  disabled={record.symbol === 'admin'}
+                  onClick={ () => this.handleOperate(text, record, dataIndex, 'config') }
+                  disabled={ record.symbol === 'admin' }
                 >
                   配置权限
                 </a>
                 <a-divider type="vertical" />
                 <a
                   href="javascript:;"
-                  onClick={() => this.handleOperate(text, record, dataIndex, 'edit')}
-                  disabled={record.symbol === 'admin'}
+                  onClick={ () => this.handleOperate(text, record, dataIndex, 'edit') }
+                  disabled={ record.symbol === 'admin' }
                 >
                   编辑
                 </a>
                 <a-divider type="vertical" />
                 <a
                   href="javascript:;"
-                  class={record.symbol === 'admin' ? '' : 'error'}
-                  onClick={() => this.handleOperate(text, record, dataIndex, 'delete')}
-                  disabled={record.symbol === 'admin'}
+                  class={ record.symbol === 'admin' ? '' : 'error' }
+                  onClick={ () => this.handleOperate(text, record, dataIndex, 'delete') }
+                  disabled={ record.symbol === 'admin' }
                 >
                   删除
                 </a>
@@ -76,18 +76,20 @@ export default {
   },
   computed: {},
   watch: {
-    currentInfo(c, o) {
+    currentInfo (c, o) {
       if (c) {
         this.nameCount = c.name ? c.name.length : 0
         this.symbolCount = c.symbol ? c.symbol.length : 0
         this.descCount = c.desc ? c.desc.length : 0
       }
     },
-    isConfig(c) {
-      this.modalTitle = c ? '配置权限' : `${this.currentInfo.id ? '编辑' : '新增'}权限组`
+    showModal (c) {
+      if (c) {
+        this.modalTitle = this.isConfig ? '配置权限' : `${this.currentInfo.id ? '编辑' : '新增'}权限组`
+      }
     }
   },
-  created() {
+  created () {
     Object.assign(this.query, { name: '' })
 
     /**设置获得列表信息调用接口*/
@@ -97,7 +99,7 @@ export default {
   },
   methods: {
     /**获得权限组配置权限，三级联动数据结构*/
-    getGroupMenuPpermissionsInfo() {
+    getGroupMenuPpermissionsInfo () {
       getRbacGroupMenuPermissions({ id: this.currentInfo.id })
         .then(({ status_code, message, data }) => {
           if (status_code !== 200) {
@@ -125,7 +127,7 @@ export default {
                   children: newChildren,
                   parents: !isKen ? p1 : null,
                 }
-                if ( /^\d+$/.test(key)) {
+                if (/^\d+$/.test(key)) {
                   key = [...p1, key].join('.')
                   o.key = key
                   _map.set(key, o)
@@ -151,7 +153,7 @@ export default {
       this.getInfoList(1)
     }),
     /**操作列事件处理 */
-    handleOperate(text, record, dataIndex, type) {
+    handleOperate (text, record, dataIndex, type) {
       let op = {
         //配置操作
         config: () => {
@@ -162,6 +164,8 @@ export default {
         edit: () => {
           this.showModal = true
           this.isConfig = false
+
+          // this.modalTitle = '编辑权限组'
         },
         delete: () => {
           this.$confirm({
@@ -196,20 +200,20 @@ export default {
       }
     },
     /**输入出插槽内容 */
-    renderModalSlot() {
+    renderModalSlot () {
       let vnode = (
         <div style="overflow:auto;">
           <a-tree
             checkable
             style="height:400px"
-            treeData={this.treeData}
-            checkedKeys={this.checkedKeys}
-            onCheck={this.handleCheck}
+            treeData={ this.treeData }
+            checkedKeys={ this.checkedKeys }
+            onCheck={ this.handleCheck }
           />
         </div>
       )
       if (!this.isConfig) {
-        let nameInput = <a-input maxLength={12} placeholder="权限组名称" />
+        let nameInput = <a-input maxLength={ 12 } placeholder="权限组名称" />
         nameInput.data.directives = [
           {
             name: 'decorator',
@@ -227,7 +231,7 @@ export default {
             ]
           }
         ]
-        let symbolInput = <a-input maxLength={20} placeholder="唯一标识" />
+        let symbolInput = <a-input maxLength={ 20 } placeholder="唯一标识" />
         symbolInput.data.directives = [
           {
             name: 'decorator',
@@ -245,7 +249,7 @@ export default {
             ]
           }
         ]
-        let descInput = <a-input maxLength={120} type="textarea" placeholder="请输入描述" />
+        let descInput = <a-input maxLength={ 120 } type="textarea" placeholder="请输入描述" />
         descInput.data.directives = [
           {
             name: 'decorator',
@@ -259,31 +263,31 @@ export default {
         ]
 
         vnode = (
-          <a-form form={this.form}>
+          <a-form form={ this.form }>
             <a-form-item
               label="权限组名称"
-              label-col={this.formItemLayout.labelCol}
-              wrapper-col={this.formItemLayout.wrapperCol}
+              label-col={ this.formItemLayout.labelCol }
+              wrapper-col={ this.formItemLayout.wrapperCol }
             >
-              {nameInput}
-              <span class="counts-tips">{this.nameCount}/12</span>
+              { nameInput }
+              <span class="counts-tips">{ this.nameCount }/12</span>
             </a-form-item>
             <a-form-item
               label="唯一标识"
-              label-col={this.formItemLayout.labelCol}
-              wrapper-col={this.formItemLayout.wrapperCol}
+              label-col={ this.formItemLayout.labelCol }
+              wrapper-col={ this.formItemLayout.wrapperCol }
               required
             >
-              {symbolInput}
-              <span class="counts-tips">{this.symbolCount}/20</span>
+              { symbolInput }
+              <span class="counts-tips">{ this.symbolCount }/20</span>
             </a-form-item>
             <a-form-item
               label="描述"
-              label-col={this.formItemLayout.labelCol}
-              wrapper-col={this.formItemLayout.wrapperCol}
+              label-col={ this.formItemLayout.labelCol }
+              wrapper-col={ this.formItemLayout.wrapperCol }
             >
-              {descInput}
-              <span class="counts-tips">{this.descCount}/120</span>
+              { descInput }
+              <span class="counts-tips">{ this.descCount }/120</span>
             </a-form-item>
           </a-form>
         )
@@ -291,7 +295,7 @@ export default {
 
       return vnode
     },
-    async onModalOk(values) {
+    async onModalOk (values) {
       let r = false
       if (this.isConfig) {
         //当前为配置操作
@@ -363,10 +367,10 @@ export default {
 
       return r
     },
-    handleCheck(checkedKeys, e) {
+    handleCheck (checkedKeys, e) {
       this.checkedKeys = checkedKeys
     },
-    handlFormFieldsChange(props, fields) {
+    handlFormFieldsChange (props, fields) {
       if (fields.name && fields.name.value) {
         this.nameCount = fields.name.value.length
       }
@@ -377,7 +381,7 @@ export default {
         this.descCount = fields.desc.value.length
       }
     },
-    handlerModalClose() {
+    handlerModalClose () {
       this.currentInfo = {}
       this.isConfig = false
     }
