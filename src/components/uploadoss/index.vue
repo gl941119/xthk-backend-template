@@ -173,10 +173,16 @@ export default {
         return
       }
       this.uploading = true
-      if (this.isVod) {
-        await this[VOD_UPLOAD]()
-      } else {
-        await this[NORMAL_UPLOAD]()
+      try {
+        if (this.isVod) {
+          await this[VOD_UPLOAD]()
+        } else {
+          await this[NORMAL_UPLOAD]()
+        }
+      } catch (err) {
+        throw err
+      } finally {
+        this.uploading = false
       }
 
     },
@@ -194,14 +200,13 @@ export default {
      */
     async [NORMAL_UPLOAD] () {
       this.stsToken = await this.getStsToken().then(({ data }) => data)
-
-      const { client, path } = this[GET_ALI_UPLOAD_OSS](this.stsToken)
+      const { client, path, storePath } = this[GET_ALI_UPLOAD_OSS](this.stsToken)
       try {
 
         this.failedList = []
         for (let file of this.uploadList) {
           try {
-            const newFile = await this[OSS_LINEAR_UPLOAD](client, path, file)
+            const newFile = await this[OSS_LINEAR_UPLOAD](client, path, file, storePath)
             try {
               this.uploadSuccess && this.uploadSuccess(newFile, file)
             } catch (error) {
@@ -227,26 +232,33 @@ export default {
     /** 
      * 获得AliyOss上传的鉴权信息
      */
-    [GET_ALI_UPLOAD_OSS] ({ Credentials: { AccessKeySecret, AccessKeyId, Expiration, SecurityToken }, bucket, endpoint, cname }) {
+    [GET_ALI_UPLOAD_OSS] ({ Credentials: { AccessKeySecret, AccessKeyId, Expiration, SecurityToken }, bucket, endpoint, cname, StorePath }) {
       const client = new OSS({
         accessKeyId: AccessKeyId,
         accessKeySecret: AccessKeySecret,
         stsToken: SecurityToken,
         bucket: bucket,
         endpoint: endpoint,
-        cname
+        cname: Boolean(Number(cname))
       })
       this.uploader = client
       return {
         client,
-        path: `https://${bucket}.${endpoint}/`
+        path: `https://${bucket}.${endpoint}/`,
+        storePath: StorePath
       }
     },
     // 标准类型的串行上传
-    async [OSS_LINEAR_UPLOAD] (client, path, file) {
+    async [OSS_LINEAR_UPLOAD] (client, path, file, storePath) {
+      if (storePath) {
+        !storePath.endsWith('/') && (storePath += '/')
+      } else {
+        storePath = ''
+      }
       const { name, lastModified, size, lastModifiedDate, type, uid } = file
       const fileName = uid || `${new Date().getTime()}`
-      const relativeUrl = `${uid}_${name || 'file.png'}`
+      const relativeUrl = `${storePath}${uid}_${name || 'file.png'}`
+
       await client.multipartUpload(relativeUrl, file, {
         /** 
          * 上传进度回调
@@ -263,74 +275,84 @@ export default {
         this.afterUpload && this.afterUpload(newFile)
       } catch (err) {
         console.error(err)
+
       }
       return newFile
     },
     /** 
      * vod方式上传文件
      */
-    async [VOD_UPLOAD] () {
-      this.uploader = new AliyunUpload.Vod({
-        userId: '232133545131616410',
-        //分片大小默认1M，不能小于100K
-        partSize: 1048576,
-        //并行上传分片个数，默认5
-        parallel: 5,
-        //网络原因失败时，重新上传次数，默认为3
-        retryCount: 3,
-        //网络原因失败时，重新上传间隔时间，默认为2秒
-        retryDuration: 2,
-        //是否上报上传日志到点播，默认为true
-        enableUploadProgress: true,
-        // 开始上传
-        'onUploadstarted': async (uploadInfo) => {
-          const { file: { name } } = uploadInfo
-          //获取STS Token,设置到SDK
-          // this.uploader.setSTSToken(uploadInfo, accessKeyId, accessKeySecret, secretToken)
+    [VOD_UPLOAD] () {
+      return new Promise((resolve, reject) => {
+        this.uploader = new AliyunUpload.Vod({
+          userId: '232133545131616410',
+          //分片大小默认1M，不能小于100K
+          partSize: 1048576,
+          //并行上传分片个数，默认5
+          parallel: 5,
+          //网络原因失败时，重新上传次数，默认为3
+          retryCount: 3,
+          //网络原因失败时，重新上传间隔时间，默认为2秒
+          retryDuration: 2,
+          //是否上报上传日志到点播，默认为true
+          enableUploadProgress: true,
+          // 开始上传
+          'onUploadstarted': async (uploadInfo) => {
+            const { file: { name } } = uploadInfo
+            try {
+              this.stsToken = await this.getVodToken({ title: name.replace(/\.[^.]+$/, ''), type: name }).then(({ data }) => data)
+              const { RequestId: requestId, UploadAuth: uploadAuth, UploadAddress: uploadAddress, VideoId: videoId } = this.stsToken
+              this.uploader.setUploadAuthAndAddress(uploadInfo, uploadAuth, uploadAddress, videoId)
+            } catch (err) {
+              reject(err)
+            }
+          },
+          // 文件上传成功
+          'onUploadSucceed': (uploadInfo) => {
+            const { file, videoId } = uploadInfo
+            const newFile = {
+              ...file,
+              videoId
+            }
+            this.fileList.push(newFile)
+            this.uploadSuccess && this.uploadSuccess(newFile)
+          },
+          // 文件上传失败
+          'onUploadFailed': (uploadInfo, code, message) => {
+            if (code === 'RequestError') {  // 请求错误，直接终止全部上传
 
-          this.stsToken = await this.getVodToken({ title: name.replace(/\.[^.]+$/, ''), type: name }).then(({ data }) => data)
+              reject({ message: '网络请求异常，上传失败。', code, error: new Error(message) })
+            } else {
+              const { file } = uploadInfo
+              this.uploadFail && this.uploadFail(new Error(message), file, code)
+              this.failedList.push(file)
+            }
 
-          const { RequestId: requestId, UploadAuth: uploadAuth, UploadAddress: uploadAddress, VideoId: videoId } = this.stsToken
-          this.uploader.setUploadAuthAndAddress(uploadInfo, uploadAuth, uploadAddress, videoId)
-          // console.log({ s: this.stsToken })
+          },
+          // 文件上传进度，单位：字节
+          'onUploadProgress': (uploadInfo, totalSize, loadedPercent) => {
+            const { file } = uploadInfo
+            this.uploadProgress(loadedPercent, file, totalSize)
+          },
+          // 上传凭证超时
+          'onUploadTokenExpired': (uploadInfo) => {
+            // console.log('onUploadTokenExpired')
+            //重新获取STS token，恢复上传
+            // this.uploader.resumeUploadWithSTSToken(accessKeyId, accessKeySecret, secretToken)
+            reject({ message: '上传凭证超时', status_code: 'onUploadTokenExpired', uploader: this.uploader })
+          },
+          //全部文件上传结束
+          'onUploadEnd': (uploadInfo) => {
+            this.uploadEnd && this.uploadEnd(this.uploadList, this.fileList)
+            this.uploadList.length = 0
+            this.uploading = false
+            resolve({})
+          }
+        })
 
-        },
-        // 文件上传成功
-        'onUploadSucceed': (uploadInfo) => {
-          const { file, videoId } = uploadInfo
-          const newFile = { ...file, videoId }
-          this.fileList.push(newFile)
-          this.uploadSuccess && this.uploadSuccess(newFile)
-        },
-        // 文件上传失败
-        'onUploadFailed': (uploadInfo, code, message) => {
-          const { file } = uploadInfo
-          this.uploadFail && this.uploadFail(new Error(message), file, code)
-          this.failedList.push(file)
-        },
-        // 文件上传进度，单位：字节
-        'onUploadProgress': (uploadInfo, totalSize, loadedPercent) => {
-          const { file } = uploadInfo
-          console.log({ uploadInfo, totalSize, loadedPercent })
-          this.uploadProgress(loadedPercent, file, totalSize)
-        },
-        // 上传凭证超时
-        'onUploadTokenExpired': (uploadInfo) => {
-          // console.log('onUploadTokenExpired')
-          //重新获取STS token，恢复上传
-          // this.uploader.resumeUploadWithSTSToken(accessKeyId, accessKeySecret, secretToken)
-        },
-        //全部文件上传结束
-        'onUploadEnd': (uploadInfo) => {
-          this.uploadEnd && this.uploadEnd(this.fileList)
-          this.uploading = false
-        }
+        this.uploadList.forEach(m => this.uploader.addFile(m, null, null, null, JSON.stringify({ Vod: {} })))
+        this.uploader.startUpload()
       })
-
-      this.uploadList.forEach(m => this.uploader.addFile(m, null, null, null, JSON.stringify({ Vod: {} })))
-
-      this.uploader.startUpload()
-
     },
     onBeforeUpload (file, fileList) {
       if (this.beforeUpload && this.beforeUpload(file, fileList) === false) {
